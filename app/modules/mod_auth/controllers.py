@@ -15,7 +15,19 @@ def signin():
         user = User.query.filter_by(email=form.email.data).first()
         if user and check_password_hash(user.password, form.password.data):
             session['user_id'] = user.id
-            flash('Welcome %s' % user.name)
-            return redirect(url_for('auth.home'))
+            flash('Welcome %s' % user.username)
+
+            user_routes = {
+                1: 'student.home',
+                2: 'professor.home',
+                3: 'professor_cod.home',
+                4: 'admin_staff.home'
+            }
+
+            if user.role in range(1, user_routes.__len__() + 1):
+                return redirect(url_for(user_routes[user.role]))
+            else:
+                return redirect(url_for('404'))
+
         flash('Wrong email or password', 'error-message')
     return render_template("auth/signin.html", form=form)

@@ -7,7 +7,7 @@ db = SQLAlchemy(app)
 
 
 @app.errorhandler(404)
-def not_found(error):
+def not_found(_):
     return render_template('404.html'), 404
 
 
