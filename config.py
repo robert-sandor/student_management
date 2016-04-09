@@ -1,17 +1,20 @@
-# Statement for enabling the development environment
-DEBUG = True
-
 # Define the application directory
 import os
+
+# Statement for enabling the development environment
+DEBUG = True
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Define the database - we are working with
 # SQLite for this example
-SQLALCHEMY_DATABASE_URI = 'postgresql://rmoctqhqiwmhtt:rEpdEgINldp49c7FAAjFp1sGxI@ec2-54-217-202-109.eu-west-1.compute.amazonaws.com/dccjnekvon43ce'
+
+USERNAME = 'rmoctqhqiwmhtt'
+PASSWORD = 'rEpdEgINldp49c7FAAjFp1sGxI'
+SERVER   = 'ec2-54-217-202-109.eu-west-1.compute.amazonaws.com'
+DATABASE = 'dccjnekvon43ce'
+SQLALCHEMY_DATABASE_URI = 'postgresql://' + USERNAME + ':' + PASSWORD + '@' + SERVER + '/' + DATABASE
 DATABASE_CONNECT_OPTIONS = {}
-# USERNAME = "rmoctqhqiwmhtt"
-# PASSWORD = "rEpdEgINldp49c7FAAjFp1sGxI"
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 # Application threads. A common general assumption is
