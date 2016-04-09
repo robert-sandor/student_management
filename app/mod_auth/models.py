@@ -16,7 +16,7 @@ class User(Base):
     name = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(128), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
-    role = db.Column(db.SmallInteger, nullable=False)
+    # role = db.Column(db.SmallInteger, nullable=False)
     status = db.Column(db.SmallInteger, nullable=False)
 
     def __init__(self, name, email, password):

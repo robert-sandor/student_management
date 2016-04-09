@@ -1,0 +1,135 @@
+Faculty:
+  -id:      int
+  -name:    string
+  -address: string
+  -contact: string
+
+StudyLevel:
+  -id:			int
+  -faculty_id:	int
+  -type(bachelors, masters, phd):	string
+
+Specialty:
+  -id:				int
+  -study_level_id:	int
+  -type(info, mate, mate-info, etc masters): 	string
+
+StudyLine:
+  -id: 					int
+  -specialty_id:			int
+  -type(en, hu, ro, de):string
+
+StudyPlan:
+  -id:					             int
+  -study_line_id:			       int
+  -start_year:			         int
+  -end_year(generation):	   int
+  -initial_capacity:	   	   int
+
+Year:
+  -id:				         int
+  -study_plan_id:		   int
+  -year:			         int
+  -current_capacity:	 int
+
+Semester:
+  -id:		 	int
+  -year_id:		int
+  -semester:	int
+
+Group:
+  -id:			                  int
+  -semester_id:	              int
+  -group_number:	            int
+
+SemiGroup:
+  -id:				                int
+  -group_id:			            int
+  -semigroup_number:	        int
+
+Student:
+  -id:						            int
+  -semigroup_id:				      int
+  -serial_number:			        int
+  -user(connect to user)
+
+
+StudyContract:
+  -id:			          int
+  -course_id:	        int
+  -student_id:	      int
+  ######################################
+
+Evaluation:
+  -id:		                     int
+  -passed:	                   bool
+  ######################################################
+
+GradeEvaluation:
+  -id:				int
+  -date:			date
+  -grade:			real
+  -evaluation_id:	int
+  -presence:		boolean
+
+Course:
+  -id:			int
+  -semester_id:	int
+  -name:		string
+  -code:		string
+  -professor:	string
+  -credits:		int
+  -evaluation_type(C, VP, E):	string
+  -description:	string
+
+MandatoryCourse:
+  -id:		int
+  -course(connect to course)
+
+OptionalCourse:
+  -id:			int
+  -course(connect to course)
+  -package:		int
+  -active:		bool
+  -idCod:		int
+  -language:	string
+
+
+Professor:
+  -id:			int
+  -user(connect to user)
+  -rank:		string
+  -idDepartment:int
+
+ProfessorRole:
+  -professorId:		int
+  -courseId:		int
+  -roleTypeId(primary key with 3 fields + foreign key???): int
+
+RoleType:
+  -id:		int
+  -name(labTeacher, lecturer, seminarist):	string
+
+
+Department:
+  -id:			int
+  -facultyId:	int
+  -name:		string
+  -idCODProfessor(just the COD): int
+
+AdminStaff:
+  -id:			int
+  -facultyId:	int
+  -type:		string
+  -user (connect to user)
+
+
+User:
+  -firstName:   string
+  -lastName:    string
+  -gender:      char(1)
+  -password:    string
+  -username:    string
+  -email:       string
+  -CNP:         long
+  -cellphone:   string
