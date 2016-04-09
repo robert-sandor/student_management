@@ -106,3 +106,11 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# Things we don't really know if we need
+.idea/misc.xml
+.idea/modules.xml
+.idea/encodings.xml
+
+# Thing we really fkin don't know if it is good to remove
+.idea/student_management.iml
