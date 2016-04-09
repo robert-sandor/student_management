@@ -1,8 +1,10 @@
 from werkzeug.utils import redirect
 
-from app import app
+from flask import Blueprint
+
+base_page = Blueprint('base_page', __name__, url_prefix='/')
 
 
-@app.route('/', methods=['GET'])
+@base_page.route('/', methods=['GET'])
 def main_page():
     return redirect("/auth/signin", 302)
