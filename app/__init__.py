@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -26,3 +27,13 @@ app.register_blueprint(professor_cod)
 app.register_blueprint(student)
 
 db.create_all()
+
+from app.modules.mod_auth.models import User
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
