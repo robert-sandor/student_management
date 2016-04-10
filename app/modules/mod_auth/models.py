@@ -15,7 +15,7 @@ class User(db.Model):
     status = db.Column(db.SmallInteger, nullable=False)
 
     def __init__(self, name, email, password):
-        self.name = name
+        self.username = name
         self.email = email
         self.password = password
 
