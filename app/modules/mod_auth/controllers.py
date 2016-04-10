@@ -1,6 +1,7 @@
 from flask import Blueprint, request, render_template, \
     flash, session, redirect, url_for
 from werkzeug.security import check_password_hash
+from flask.ext.login import login_user
 
 from app.modules.mod_auth.forms import LoginForm
 from app.modules.mod_auth.models import User
@@ -25,6 +26,7 @@ def signin():
             }
 
             if user.role in range(1, user_routes.__len__() + 1):
+                login_user(user)
                 return redirect(url_for(user_routes[user.role]))
             else:
                 return redirect(url_for('404'))

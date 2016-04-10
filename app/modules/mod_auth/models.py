@@ -19,5 +19,23 @@ class User(db.Model):
         self.email = email
         self.password = password
 
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+
+    def get_role(self):
+        return self.role
+
     def __repr__(self):
-        return '<User %r>' % self.name
+        return '<User %r>' % self.username
