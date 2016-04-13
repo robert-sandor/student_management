@@ -12,4 +12,4 @@ def admin_home():
                  "email": current_user.email,
                  "role": current_user.role,
                  "status": current_user.status}
-    return render_template('admin/confirmedLogIn.html', user_info=user_info)
+    return render_template('admin/confirmed_login.html', user_info=user_info)
