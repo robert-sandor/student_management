@@ -7,7 +7,7 @@ admin_staff = Blueprint('admin_staff', __name__, url_prefix='/admin')
 
 @admin_staff.route('/home/')
 @login_required(4)
-def admin_home():
+def home():
     user_info = {"username": current_user.username,
                  "email": current_user.email,
                  "role": current_user.role,
