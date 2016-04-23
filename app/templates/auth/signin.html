@@ -1,19 +1,77 @@
+<!doctype html>
+<html>
+<head>
+    <title>Signin</title>
+    <meta charset='UTF-8'/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"/>
+
+    <style type="text/css">
+        body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            background-color: #eee;
+        }
+
+        .form-signin {
+            max-width: 330px;
+            padding: 15px;
+            margin: 0 auto;
+        }
+
+        .form-signin .form-signin-heading,
+        .form-signin .checkbox {
+            margin-bottom: 10px;
+        }
+
+        .form-signin .checkbox {
+            font-weight: normal;
+        }
+
+        .form-signin .form-control {
+            position: relative;
+            height: auto;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .form-signin .form-control:focus {
+            z-index: 2;
+        }
+
+        .form-signin input[type="email"] {
+            margin-bottom: -1px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        .form-signin input[type="password"] {
+            margin-bottom: 10px;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        
+        .error {
+            text-color:red;
+        }
+    </style>
+</head>
+<body>
 {% macro render_field(field, placeholder=None) %}
     {% if field.errors %}
-        <div>
     {% elif field.flags.error %}
-        <div>
     {% else %}
-        <div>
     {% endif %}
 {% set css_class = 'form-control ' + kwargs.pop('class', '') %}
-{{ field(class=css_class, placeholder=placeholder, **kwargs) }}
-</div>
+{{ field(class=css_class, placeholder=placeholder, required=True, **kwargs) }}
 {% endmacro %}
 
-<div>
-    <div>
-        <legend>Sign in</legend>
+<div class="container">
+    <form class="form-signin" method="POST" action="." accept-charset="UTF-8" role="form">
+        <h3 class="form-signin-heading">Sign in</h3>
         {% with errors = get_flashed_messages(category_filter=["error"]) %}
             {% if errors %}
                 <div>
@@ -25,7 +83,7 @@
         {% endwith %}
 
         {% if form.errors %}
-            <div>
+            <div class="error">
                 {% for field, error in form.errors.items() %}
                     {% for e in error %}
                         {{ e }}<br>
@@ -33,18 +91,18 @@
                 {% endfor %}
             </div>
         {% endif %}
-        <form method="POST" action="." accept-charset="UTF-8" role="form">
-            {{ form.csrf_token }}
-            {{ render_field(form.email, placeholder="Your Email Address",
+        {{ form.csrf_token }}
+        {{ render_field(form.email, placeholder="Email Address",
                                   autofocus="") }}
-            {{ render_field(form.password, placeholder="Password") }}
-            <div>
-                <label>
-                    <input type="checkbox" name="remember" value="1"> Remember Me
-                </label>
-                <a role="button" href="">Forgot your password?</a><span class="clearfix"></span>
-            </div>
-            <button type="submit" name="submit">Sign in</button>
-        </form>
-    </div>
+        {{ render_field(form.password, placeholder="Password") }}
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" name="remember" value="1"> Remember me
+            </label>
+            <!--<a role="button" href="">Forgot your password?</a><span class="clearfix"></span>-->
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">Sign in</button>
+    </form>
 </div>
+</body>
+</html>
