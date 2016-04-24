@@ -1,17 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Hello, student!</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-<body>
-<div class="container">
-    <div class="jumbotron">
-        <h1>Hello, {{data.username}}!</h1>
-        Your email is: {{data.email}}
-        <br>Your role is: {{data.role}}
-    </div>
-</div>
-</body>
-</html>
+{% extends "common/base.html" %}
+
+{% block title %}Student frontpage{% endblock %}
+
+{% block page_title %}Student frontpage{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <!-- jQuery (used for menu) -->
+    <script src="../static/js/jquery.js"></script>
+
+    <!-- Bootstrap core js (useful to have) -->
+    <script src="../static/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block username %}{{data.username}}{% endblock %}
+
+{% block role %}{{ super() }}{% endblock %}
