@@ -64,12 +64,14 @@
             <!-- Sidebar menu items list-->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">
+                    {% block navigation %}
                     <li class="active">
                         <a href="base.html">Home</a>
                     </li>
                     <li>
                         <a href="#">Settings</a>
                     </li>
+                    {% endblock %}
                 </ul>
             </div>
         </nav>

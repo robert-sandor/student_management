@@ -14,3 +14,10 @@
 {% endblock %}
 
 {% block username %}{{data.username}}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li class="active">
+        <a href="#">Grades</a>
+    </li>
+{% endblock %}
