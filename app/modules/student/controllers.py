@@ -17,12 +17,23 @@ def home():
     return render_template('student/welcome.html', data=data)
 
 
-@student.route('/home/grades/', methods=['GET', 'POST'])
+@student.route('/grades/temporary/', methods=['GET', 'POST'])
 @login_required(1)
-def grades():
+def grades_temporary():
     stud = Student.query.filter_by(user_id=current_user.id).first()
     data = {
         "firstname": stud.first_name,
         "lastname": stud.last_name
     }
     return render_template('student/temporary_grades.html', data=data)
+
+
+@student.route('/grades/final/', methods=['GET', 'POST'])
+@login_required(1)
+def grades_final():
+    stud = Student.query.filter_by(user_id=current_user.id).first()
+    data = {
+        "firstname": stud.first_name,
+        "lastname": stud.last_name,
+    }
+    return render_template('student/final_grades.html', data=data)

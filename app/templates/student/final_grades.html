@@ -1,8 +1,8 @@
 {% extends "student/welcome.html" %}
 
-{% block title %}Student temporary grades{% endblock %}
+{% block title %}Student grades{% endblock %}
 
-{% block page_title %}Student temporary grades{% endblock %}
+{% block page_title %}Student grades{% endblock %}
 
 {% block head %}
     {{ super() }}
@@ -11,17 +11,14 @@
 
 {% block content %}
     <div class="container">
-  <h2>{{ data.firstname }} {{ data.lastname }}'s temporary grades</h2>
+  <h2>{{ data.firstname }} {{ data.lastname }}'s grades</h2>
   <table class="table">
     <thead>
       <tr>
         <th>Course</th>
         <th>Date 1</th>
         <th>Grade</th>
-        <th>Date 2</th>
-        <th>Grade</th>
-        <th>Date 3</th>
-        <th>Grade</th>
+        <th>Passed</th>
       </tr>
     </thead>
     <tbody>
@@ -29,28 +26,19 @@
         <td>ASC</td>
         <td>22.02.2016</td>
         <td>5</td>
+        <td>Passed</td>
+      </tr>
+      <tr>
+        <td>OS</td>
         <td>22.02.2016</td>
-          <td>0</td>
-        <td>22.02.2016</td>
-        <td>10</td>
+        <td>3</td>
+        <td>Failed</td>
       </tr>
       <tr>
         <td>ASC</td>
         <td>22.02.2016</td>
         <td>5</td>
-        <td>22.02.2016</td>
-          <td>0</td>
-        <td>22.02.2016</td>
-        <td>10</td>
-      </tr>
-      <tr>
-        <td>ASC</td>
-        <td>22.02.2016</td>
-        <td>5</td>
-        <td>22.02.2016</td>
-          <td>0</td>
-        <td>22.02.2016</td>
-        <td>10</td>
+        <td>Passed</td>
       </tr>
     </tbody>
   </table>

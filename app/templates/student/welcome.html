@@ -21,10 +21,10 @@
         <a href="javascript:" data-toggle="collapse" data-target="#demo"> Grades</a>
 	    <ul id="demo" class="collapse">
             <li>
-    			<a href="grades")>Temporary</a>
+    			<a href="{{ url_for('student.grades_temporary')}}")>Temporary</a>
             </li>
             <li>
-    			<a href="#">Final</a>
+    			<a href="{{ url_for('student.grades_final')}}")>Final</a>
             </li>
     	</ul>
     </li>
