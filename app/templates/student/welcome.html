@@ -18,6 +18,14 @@
 {% block navigation %}
     {{ super() }}
     <li>
-        <a href="#">Grades</a>
+        <a href="javascript:" data-toggle="collapse" data-target="#demo"> Grades</a>
+	    <ul id="demo" class="collapse">
+            <li>
+    			<a href="grades")>Temporary</a>
+            </li>
+            <li>
+    			<a href="#">Final</a>
+            </li>
+    	</ul>
     </li>
 {% endblock %}

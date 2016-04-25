@@ -1,0 +1,66 @@
+{% extends "student/welcome.html" %}
+
+{% block title %}Student frontpage{% endblock %}
+
+{% block page_title %}Student frontpage{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+  <h2>{{ data.firstname }} {{ data.lastname }}'s temporary grades</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Course</th>
+        <th>Date 1</th>
+        <th>Grade</th>
+        <th>Date 2</th>
+        <th>Grade</th>
+        <th>Date 3</th>
+        <th>Grade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ASC</td>
+        <td>22.02.2016</td>
+        <td>5</td>
+        <td>22.02.2016</td>
+          <td>0</td>
+        <td>22.02.2016</td>
+        <td>10</td>
+      </tr>
+      <tr>
+        <td>ASC</td>
+        <td>22.02.2016</td>
+        <td>5</td>
+        <td>22.02.2016</td>
+          <td>0</td>
+        <td>22.02.2016</td>
+        <td>10</td>
+      </tr>
+      <tr>
+        <td>ASC</td>
+        <td>22.02.2016</td>
+        <td>5</td>
+        <td>22.02.2016</td>
+          <td>0</td>
+        <td>22.02.2016</td>
+        <td>10</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block username %}{{ super() }}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+{% endblock %}
