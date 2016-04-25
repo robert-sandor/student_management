@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, \
     flash, session, redirect, url_for
 from werkzeug.security import check_password_hash
-from flask.ext.login import login_user
+from flask.ext.login import login_user, login_required, logout_user
 
 from app.modules.mod_auth.forms import LoginForm
 from app.modules.mod_auth.models import User
@@ -33,3 +33,10 @@ def signin():
 
         flash('Wrong email or password', 'error-message')
     return render_template("auth/signin.html", form=form)
+
+
+@mod_auth.route('/logout/', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    return redirect("/")
