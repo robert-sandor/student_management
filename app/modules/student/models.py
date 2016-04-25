@@ -1,66 +1,52 @@
 # coding: utf-8
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, SmallInteger, String, text
+from sqlalchemy import Boolean, Column, Date, ForeignKey, ForeignKeyConstraint, Integer, SmallInteger, String, text
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from app import db
 
 
-Base = declarative_base()
-metadata = Base.metadata
+class Contract(db.Model):
+    __tablename__ = 'contract'
+
+    id = Column(Integer, primary_key=True)
+    student_id = Column(ForeignKey('student.id'), nullable=False)
+
+    student = relationship('Student')
 
 
-class AuthUser(Base):
-    __tablename__ = 'auth_user'
+class GradeEvaluation(db.Model):
+    __tablename__ = 'grade_evaluation'
+    __table_args__ = (
+        ForeignKeyConstraint(['course_id', 'contract_id'], ['evaluation.course_id', 'evaluation.contract_id']),
+    )
 
-    id = Column(Integer, primary_key=True, server_default=text("nextval('auth_user_id_seq'::regclass)"))
-    date_created = Column(DateTime)
-    date_modified = Column(DateTime)
-    username = Column(String(128), nullable=False)
-    email = Column(String(128), nullable=False, unique=True)
-    password = Column(String(128), nullable=False)
-    role = Column(SmallInteger, nullable=False)
-    status = Column(SmallInteger, nullable=False)
+    evaluation_date = Column(Date)
+    grade = Column(Integer)
+    present = Column(Boolean, nullable=False, server_default=text("false"))
+    contract_id = Column(Integer, nullable=False)
+    course_id = Column(Integer, nullable=False)
+    id = Column(Integer, primary_key=True, unique=True)
+
+    course = relationship('Evaluation')
 
 
-class Faculty(Base):
-    __tablename__ = 'faculty'
+class RoleType(db.Model):
+    __tablename__ = 'role_type'
 
     id = Column(Integer, primary_key=True, unique=True)
-    faculty_name = Column(String(50))
-    address = Column(String(200))
-    contact = Column(String(200))
+    type_name = Column(String(50), nullable=False)
 
 
-class Semester(Base):
-    __tablename__ = 'semester'
-
-    id = Column(Integer, primary_key=True, unique=True)
-    year_id = Column(ForeignKey('year.id'), nullable=False)
-    semester = Column(Integer, nullable=False)
-
-    year = relationship('Year')
-
-
-class Semigroup(Base):
+class Semigroup(db.Model):
     __tablename__ = 'semigroup'
 
     id = Column(Integer, primary_key=True, unique=True)
-    semigroup_id = Column(ForeignKey('studygroup.id'), nullable=False)
+    semigroup_id = Column(ForeignKey('study_group.id'), nullable=False)
     semigroup_number = Column(String(5))
 
-    semigroup = relationship('Studygroup')
+    semigroup = relationship('StudyGroup')
 
 
-class Specialty(Base):
-    __tablename__ = 'specialty'
-
-    id = Column(Integer, primary_key=True, unique=True)
-    specialty_type = Column(String(50), nullable=False)
-    study_level_id = Column(ForeignKey('studylevel.id'), nullable=False)
-
-    study_level = relationship('Studylevel')
-
-
-class Student(Base):
+class Student(db.Model):
     __tablename__ = 'student'
 
     id = Column(Integer, primary_key=True, unique=True)
@@ -71,11 +57,11 @@ class Student(Base):
     last_name = Column(String(128), nullable=False)
 
     semigroup = relationship('Semigroup')
-    user = relationship('AuthUser')
+    user = relationship('User')
 
 
-class Studygroup(Base):
-    __tablename__ = 'studygroup'
+class StudyGroup(db.Model):
+    __tablename__ = 'study_group'
 
     id = Column(Integer, primary_key=True, unique=True)
     semester_id = Column(ForeignKey('semester.id'), nullable=False)
@@ -84,44 +70,16 @@ class Studygroup(Base):
     semester = relationship('Semester')
 
 
-class Studylevel(Base):
-    __tablename__ = 'studylevel'
+class Vote(db.Model):
+    __tablename__ = 'vote'
 
-    id = Column(Integer, primary_key=True, unique=True)
-    study_level = Column(String(50), nullable=False)
-    faculty_id = Column(ForeignKey('faculty.id'), nullable=False)
+    optional_id = Column(ForeignKey('optional_course.id'), primary_key=True, nullable=False)
+    contract_id = Column(ForeignKey('contract.id'), primary_key=True, nullable=False)
+    package_id = Column(ForeignKey('package.id'), nullable=False)
+    position = Column(Integer, nullable=False, server_default=text("0"))
 
-    faculty = relationship('Faculty')
-
-
-class Studyline(Base):
-    __tablename__ = 'studyline'
-
-    id = Column(Integer, primary_key=True, unique=True)
-    study_language = Column(String(50), nullable=False)
-    specialty_id = Column(ForeignKey('specialty.id'), nullable=False)
-
-    specialty = relationship('Specialty')
+    contract = relationship('Contract')
+    optional = relationship('OptionalCourse')
+    package = relationship('Package')
 
 
-class Studyplan(Base):
-    __tablename__ = 'studyplan'
-
-    id = Column(Integer, primary_key=True, unique=True)
-    study_line_id = Column(ForeignKey('studyline.id'), nullable=False)
-    start_year = Column(Integer, nullable=False)
-    end_year = Column(Integer, nullable=False)
-    initial_capacity = Column(Integer, server_default=text("0"))
-
-    study_line = relationship('Studyline')
-
-
-class Year(Base):
-    __tablename__ = 'year'
-
-    id = Column(Integer, primary_key=True, unique=True)
-    study_plan_id = Column(ForeignKey('studyplan.id'), nullable=False)
-    study_year = Column(Integer, nullable=False)
-    current_capacity = Column(Integer, nullable=False, server_default=text("0"))
-
-    study_plan = relationship('Studyplan')
