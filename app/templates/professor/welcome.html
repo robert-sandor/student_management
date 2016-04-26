@@ -21,7 +21,7 @@
     <li>
         <a href="javascript:" data-toggle="collapse" data-target="#demo"> Grading</a>
 	    <ul id="demo" class="collapse">
-            {% for course in data.courses %}
+            {% for course in data.courses_names %}
                 <li><a href="/prof/grading/{{course}}">{{ course }}</a></li>
             {% endfor %}
 	    </ul>
