@@ -10,7 +10,8 @@
 
 {% block content %}
     {{ super() }}
-    Content goes here! HTML, CSS, you name it. This will scroll.
+    {{ data.content }}
+
 {% endblock %}
 
 {% block username %}{{data.username}}{% endblock %}
@@ -21,7 +22,7 @@
         <a href="javascript:" data-toggle="collapse" data-target="#demo"> Grading</a>
 	    <ul id="demo" class="collapse">
             {% for course in data.courses %}
-                <li><a href="#">{{ course }}</a></li>
+                <li><a href="/prof/grading/{{course}}">{{ course }}</a></li>
             {% endfor %}
 	    </ul>
     </li>
