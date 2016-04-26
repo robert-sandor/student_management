@@ -121,6 +121,8 @@ class Course(db.Model):
 
     semester = relationship('Semester')
 
+    professors_role = relationship('ProfessorRole')
+
 
 class Department(db.Model):
     __tablename__ = 'department'
@@ -236,6 +238,8 @@ class Professor(db.Model):
 
     department = relationship('Department', primaryjoin='Professor.id_department == Department.id')
     auth_user = relationship('User')
+
+    professor_roles = relationship('ProfessorRole')
 
 
 class ProfessorRole(db.Model):

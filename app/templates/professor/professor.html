@@ -1,14 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Professor</title>
-</head>
-<body>
-<h1>Welcome!</h1>
-        Email : {{data.email}}
-        <br>
-        Role: {{data.role}}
+{% extends "common/base.html" %}
 
-</body>
-</html>
+{% block title %}Professor frontpage{% endblock %}
+
+{% block page_title %}Professor frontpage{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    Content goes here! HTML, CSS, you name it. This will scroll.
+{% endblock %}
+
+{% block username %}{{data.username}}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li>
+        <a href="javascript:" data-toggle="collapse" data-target="#demo"> Grading</a>
+	    <ul id="demo" class="collapse">
+            {% for course in data.courses %}
+                <li><a href="#">{{ course }}</a></li>
+            {% endfor %}
+	    </ul>
+    </li>
+{% endblock %}
