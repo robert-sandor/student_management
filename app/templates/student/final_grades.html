@@ -16,29 +16,17 @@
     <thead>
       <tr>
         <th>Course</th>
-        <th>Date 1</th>
-        <th>Grade</th>
         <th>Passed</th>
+        <th>Date</th>
+        <th>Grade</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td>ASC</td>
-        <td>22.02.2016</td>
-        <td>5</td>
-        <td>Passed</td>
-      </tr>
-      <tr>
-        <td>OS</td>
-        <td>22.02.2016</td>
-        <td>3</td>
-        <td>Failed</td>
-      </tr>
-      <tr>
-        <td>ASC</td>
-        <td>22.02.2016</td>
-        <td>5</td>
-        <td>Passed</td>
+        <td>{{ data.course }}</td>
+        <td>{{ data.passed }}</td>
+        <td>{{ data.firstdate }}</td>
+        <td>{{ data.firstgrade }}</td>
       </tr>
     </tbody>
   </table>
