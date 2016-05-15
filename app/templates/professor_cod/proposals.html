@@ -1,0 +1,71 @@
+{% extends "common/base.html" %}
+
+{% block title %}COD frontpage{% endblock %}
+
+{% block page_title %}COD frontpage{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        a:link {
+            text-decoration: none;
+            color: black;
+        }
+
+        .pagination-centered {
+            padding-top: 1%;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <a class="btn btn-default" href="#" role="button">Preview</a>
+    <div class="panel-group" id="accordion">
+        {% for item in data.proposals %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <div class="row">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ item.id }}">
+                                <div class="col-md-10 pagination-centered">{{ item.course_name }}</div>
+                            </a>
+
+                            <div class="col-md-1">
+                                <div class="checkbox{{ item.id }}">
+                                    <label><input type="checkbox" value="">Accept?</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-1 pagination-centered pull-right">
+                                <label>
+                                    <select name="package{{ item.id }}">
+                                        {% for pckg in data.packages %}
+                                        <option value="volvo">{{ pckg.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </label>
+                            </div>
+                        </div>
+                    </h4>
+                </div>
+                <div id="collapse{{ item.id }}" class="panel-collapse collapse">
+                    <div class="panel-body">{{ item.course_description }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block username %}{{ data.username }}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li>
+        <a href="/prof_cod/proposals" class="active">Proposals</a>
+    </li>
+{% endblock %}
+
+
+{% block additional_js %}
+{% endblock %}

@@ -1,1 +1,23 @@
-#TODO
+{% extends "common/base.html" %}
+
+{% block title %}COD frontpage{% endblock %}
+
+{% block page_title %}COD frontpage{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    Welcome!
+{% endblock %}
+
+{% block username %}{{data.username}}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li>
+        <a href="/prof_cod/proposals">Proposals</a>
+    </li>
+{% endblock %}
