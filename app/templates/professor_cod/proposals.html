@@ -16,11 +16,48 @@
             padding-top: 1%;
         }
     </style>
+
+    <script>
+        function checkAccept() {
+            var opts = [];
+            var selected = [];
+            $('.row input:checked').each(function () {
+                opts.push($(this));
+                selected.push($(this).parent().parent().prop('className'));
+            });
+
+            var map_id_to_package = {};
+            var i;
+            for (i = 0, len = selected.length; i < len; i++) {
+                var val = $(".package" + selected[i].replace(/[A-Za-z$-]/g, "")
+                                .toString()).children("option")
+                                .filter(":selected").prop('className');
+                val = parseInt(val.replace(/[A-Za-z$-]/g, ""));
+                map_id_to_package[val] =  map_id_to_package[val] || [];
+                map_id_to_package[val].push(selected[i].replace(/[A-Za-z$-]/g, ""));
+            }
+            var json = JSON.stringify(map_id_to_package, null, '\t');
+            console.log(json);
+
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('professor_cod.save') }}",
+                data: json,
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    window.location = response;
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
 {% endblock %}
 
 {% block content %}
     {{ super() }}
-    <a class="btn btn-default" href="#" role="button">Preview</a>
+    <a class="btn btn-default" role="button" onclick="checkAccept()">Save</a>
     <div class="panel-group" id="accordion">
         {% for item in data.proposals %}
             <div class="panel panel-default">
@@ -31,20 +68,21 @@
                                 <div class="col-md-10 pagination-centered">{{ item.course_name }}</div>
                             </a>
 
-                            <div class="col-md-1">
-                                <div class="checkbox{{ item.id }}">
-                                    <label><input type="checkbox" value="">Accept?</label>
+                            <div class="pkg-opt">
+                                <div class="col-md-1">
+                                    <div class="checkbox{{ item.id }}">
+                                        <label><input type="checkbox" name="checkbox">Accept?</label>
+                                    </div>
                                 </div>
-                            </div>
-
-                            <div class="col-md-1 pagination-centered pull-right">
-                                <label>
-                                    <select name="package{{ item.id }}">
-                                        {% for pckg in data.packages %}
-                                        <option value="volvo">{{ pckg.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </label>
+                                <div class="col-md-1 pagination-centered pull-right">
+                                    <label>
+                                        <select class="package{{ item.id }}">
+                                            {% for pckg in data.packages %}
+                                                <option class="pckg{{ pckg.id }}">{{ pckg.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </h4>
@@ -68,4 +106,5 @@
 
 
 {% block additional_js %}
+
 {% endblock %}
