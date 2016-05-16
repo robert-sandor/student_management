@@ -50,7 +50,6 @@ def grades_final():
     eval = get_evaluation(contract)
     # grade_eval = get_grade_evaluation(contract)
     grade_eval = get_final_evaluation(contract)
-    print("fsafasdas", grade_eval)
     data = { "role": current_user.role,
             "firstdate": grade_eval.evaluation_date,
             "firstgrade": grade_eval.max_grade,
