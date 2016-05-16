@@ -17,10 +17,11 @@ def home():
 @login_required(3)
 def proposals():
     data = {"username": current_user.username, "role": current_user.role, "email": current_user.email}
-    optional_courses = OptionalCourse.query.filter_by(active=False).all()
+    optional_courses = OptionalCourse.query.all()
     courses = []
     for optional_course in optional_courses:
         courses.append(optional_course.course)
+    data["opts"] = optional_courses
     data["proposals"] = courses
     data["packages"] = Package.query.all()
     return render_template("professor_cod/proposals.html", data=data)

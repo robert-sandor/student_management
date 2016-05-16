@@ -75,14 +75,26 @@
                             <div class="pkg-opt col-md-3">
                                 <div class="col-md-6 pagination-centered">
                                     <div class="checkbox{{ item.id }}">
-                                        <label><input type="checkbox" name="checkbox"> Accept?</label>
+                                        {% for opt in data.opts %}
+                                        {% if item.id == opt.course_id and opt.active == true %}
+                                            <label><input type="checkbox" name="checkbox" checked> Accept?</label>
+                                        {% elif item.id == opt.course_id and opt.active == false %}
+                                            <label><input type="checkbox" name="checkbox"> Accept?</label>
+                                        {% endif %}
+                                        {% endfor %}
                                     </div>
                                 </div>
                                 <div class="col-md-6 pagination-centered pull-right">
                                     <label>
                                         <select class="package{{ item.id }}">
                                             {% for pckg in data.packages %}
+                                                {% for opt in data.opts %}
+                                                {% if item.id == opt.course_id and pckg.id == opt.package_id %}
+                                                <option class="pckg{{ pckg.id }}" selected>{{ pckg.name }}</option>
+                                                {% else %}
                                                 <option class="pckg{{ pckg.id }}">{{ pckg.name }}</option>
+                                                {%  endif %}
+                                                {% endfor %}
                                             {% endfor %}
                                         </select>
                                     </label>
