@@ -1,5 +1,5 @@
 from app import login_required
-from flask import Blueprint,render_template
+from flask import Blueprint,render_template, request
 from flask.ext.login import current_user
 
 from app.modules.common.models import AdminStaff, AdminDates
@@ -29,6 +29,13 @@ def set_dates():
                  "status": current_user.status,
                  "dates": date}
     return render_template('admin/set_dates.html', data=user_info)
+
+
+@admin_staff.route('/set_dates/save/', methods=['POST'])
+@login_required(4)
+def save():
+    data = {}
+    return render_template('admin/set_dates.html', data=data)
 
 
 def get_staff(user_id):

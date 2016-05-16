@@ -6,45 +6,68 @@
 
 {% block head %}
     {{ super() }}
+     <style>
+        a:link {
+            text-decoration: none;
+            color: black;
+        }
+        .pagination-centered {
+            padding-top: 1%;
+        }
+    </style>
+    <script type="text/javascript">
+        $(".form_datetime").datetimepicker({
+            format: "dd MM yyyy - hh:ii",
+            autoclose: true,
+            todayBtn: true,
+            pickerPosition: "bottom-left"
+        });
+    </script>
+
 {% endblock %}
 
 
 {% block content %}
-    <div class="container">
-  <h2>Setting dates</h2>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Section</th>
-        <th>From</th>
-        <th>To</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for date in data.dates %}
-            <tr>
-            <td>
-                {% if date.type == 1 %}
-                    Contract
-                {% endif %}
-                {% if date.type == 2 %}
-                    Optional course proposing
-                {% endif %}
-                {% if date.type == 3 %}
-                    Optional course accepting
-                {% endif %}
-                {% if date.type == 4 %}
-                    Voting
-                {% endif %}
+    {{ super() }}
+    <a class="btn btn-default" role="button">Save</a>
+    <div class="panel panel-default">
+        <div class="panel-title">
+            <div class="row">
+                <div class="col-md-1 pagination-centered pull-left"><label>SECTION</label></div>
+                <div class="col-md-1 pagination-centered pull-right"><label>TO</label></div>
+                <div class="col-md-1 pagination-centered pull-right"><label>FROM</label></div>
+            </div>
+        </div>
+    </div>
 
-            </td>
-            <td contenteditable='true'>{{ date.from_date }}</td>
-            <td contenteditable='true'>{{ date.to }}</td>
-            </tr>
-        {%  endfor %}
-    </tbody>
-  </table>
-</div>
+    <div class="panel-group" id="accordion">
+        {% for item in data.dates %}
+            <div class="panel panel-default">
+                <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-1 pagination-centered pull-left">
+                                <label>
+                                    {% if item.type == 1 %}
+                                        Contract
+                                    {% endif %}
+                                    {% if item.type == 2 %}
+                                        Optional course proposing
+                                    {% endif %}
+                                    {% if item.type == 3 %}
+                                        Optional course accepting
+                                    {% endif %}
+                                    {% if item.type == 4 %}
+                                        Voting
+                                    {% endif %}
+                                </label>
+                            </div>
+                            <input size="16" type="text" value={{ item.from_date }} readonly class="form_datetime">
+                            <input size="16" type="text" value={{ item.to }} readonly class="form_datetime">
+                        </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
 
 {% block username %}{{ super() }}{% endblock %}
