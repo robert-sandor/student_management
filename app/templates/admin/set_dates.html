@@ -1,0 +1,54 @@
+{% extends "admin/welcome.html" %}
+
+{% block title %}Admin page{% endblock %}
+
+{% block page_title %}{{ data.username }}'s front page{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+  <h2>Setting dates</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Section</th>
+        <th>From</th>
+        <th>To</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for date in data.dates %}
+            <tr>
+            <td>
+                {% if date.type == 1 %}
+                    Contract
+                {% endif %}
+                {% if date.type == 2 %}
+                    Optional course proposing
+                {% endif %}
+                {% if date.type == 3 %}
+                    Optional course accepting
+                {% endif %}
+                {% if date.type == 4 %}
+                    Voting
+                {% endif %}
+
+            </td>
+            <td contenteditable='true'>{{ date.from_date }}</td>
+            <td contenteditable='true'>{{ date.to }}</td>
+            </tr>
+        {%  endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block username %}{{ super() }}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+{% endblock %}

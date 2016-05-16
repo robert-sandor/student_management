@@ -250,3 +250,13 @@ class ProfessorRole(db.Model):
     professor = relationship('Professor')
     role_type = relationship('RoleType')
 
+
+class AdminDates(db.Model):
+    __tablename__ = 'admin_dates'
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    type = Column(Integer, nullable=False)
+    from_date = Column(Date, nullable=False)
+    to = Column(Date, nullable=False)
+
+
