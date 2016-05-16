@@ -24,6 +24,8 @@ class Contract(db.Model):
 
     student = relationship('Student')
 
+    evaluation = relationship('Evaluation')
+
 
 class GradeEvaluation(db.Model):
     __tablename__ = 'grade_evaluation'
@@ -122,6 +124,8 @@ class Course(db.Model):
     semester = relationship('Semester')
 
     professors_role = relationship('ProfessorRole')
+
+    evaluation = relationship('Evaluation')
 
 
 class Department(db.Model):

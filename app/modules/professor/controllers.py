@@ -11,21 +11,26 @@ professor_blueprint = Blueprint('professor', __name__, url_prefix='/prof')
 def home():
     professor = Professor.query.filter_by(id_user=current_user.get_id()).first()
     courses = __get_professor_courses(professor)
-    courses_names = __get_courses_names(courses)
     data = {"username": current_user.username, "role": current_user.role, "email": current_user.email,
-            "courses_names": courses_names}
+            "courses": courses}
 
     return render_template("professor/welcome.html", data=data)
 
 
-@professor_blueprint.route('/grading/<course>', methods=['GET'])
+@professor_blueprint.route('/grading/<course_id>', methods=['GET'])
 @login_required(2)
-def get_students_for_course(course):
+def get_students_for_course(course_id):
     current_proffesor = Professor.query.filter_by(id_user=current_user.get_id()).first()
     courses = __get_professor_courses(current_proffesor)
-    courses_names = __get_courses_names(courses)
+    students = []
+    for course in courses:
+        if course.id == int(course_id):
+            print(course)
+            for evaluation in course.evaluation:
+                student = evaluation.contract.student
+                students.append(student)
     data = {"username": current_user.username, "role": current_user.role, "email": current_user.email,
-            "courses_names": courses_names, "content": course}
+            "courses": courses, "students": students}
 
     return render_template("professor/grading.html", data=data)
 

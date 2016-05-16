@@ -1,6 +1,33 @@
-{% extends "professor/welcome.html" %}
+{% extends "common/base.html" %}
+
+{% block title %}Professor frontpage{% endblock %}
+
+{% block page_title %}Professor frontpage{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
 
 {% block content %}
-    {{ data.content }}
+     {{ super() }}
+    <ul id="navigation">
+    {% for student in data.students %}
+        <li><a>{{ student.first_name }} {{ student.last_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}
 
+{% block username %}{{data.username}}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li>
+        <a href="javascript:" data-toggle="collapse" data-target="#demo"> Grading</a>
+	    <ul id="demo" class="collapse">
+            {% for course in data.courses %}
+                <li><a href="/prof/grading/{{course.id}}">{{ course.course_name }}</a></li>
+            {% endfor %}
+	    </ul>
+    </li>
 {% endblock %}
