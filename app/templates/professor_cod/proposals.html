@@ -45,12 +45,16 @@
                 data: json,
                 contentType: 'application/json;charset=UTF-8',
                 success: function (response) {
-                    window.location = response;
+                    if(!jQuery.isEmptyObject(map_id_to_package)) {
+                        alert("Succesfully set package!")
+                        window.location = response;
+                    }
                 },
                 error: function (error) {
                     console.log(error);
                 }
             });
+
         }
     </script>
 {% endblock %}

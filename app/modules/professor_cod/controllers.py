@@ -1,4 +1,4 @@
-from app import login_required
+from app import login_required, db
 from app.modules.common.models import OptionalCourse, Course, Package
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for
 from flask_login import current_user
@@ -17,7 +17,7 @@ def home():
 @login_required(3)
 def proposals():
     data = {"username": current_user.username, "role": current_user.role, "email": current_user.email}
-    optional_courses = OptionalCourse.query.all()
+    optional_courses = OptionalCourse.query.filter_by(active=False).all()
     courses = []
     for optional_course in optional_courses:
         courses.append(optional_course.course)
@@ -33,8 +33,7 @@ def save():
     for pack in request.json.keys():
         pack_name = Package.query.filter_by(id=int(pack)).first().name
         courses = request.json[pack]
-        data[pack_name] = []
-        for course in courses:
-            data[pack_name].append(Course.query.filter_by(id=int(course)).first())
-        print(data)
-    return '', 200
+        for course_id in courses:
+            OptionalCourse.query.filter_by(course_id=int(course_id)).update(dict(package_id=int(pack)))
+            db.session.commit()
+    return url_for('professor_cod.home')

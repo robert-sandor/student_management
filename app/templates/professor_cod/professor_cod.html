@@ -18,6 +18,6 @@
 {% block navigation %}
     {{ super() }}
     <li>
-        <a href="/prof_cod/proposals">Proposals</a>
+        <a href="{{ url_for('professor_cod.proposals') }}">Proposals</a>
     </li>
 {% endblock %}

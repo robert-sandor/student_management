@@ -150,6 +150,7 @@ class OptionalCourse(db.Model):
     course_id = Column(ForeignKey('course.id'), nullable=False)
     active = Column(Boolean, nullable=False, server_default=text("false"))
     id_department = Column(ForeignKey('department.id'), nullable=False)
+    package_id = Column(ForeignKey('package.id'), nullable=True)
     course_language = Column(String(10))
 
     course = relationship('Course')
