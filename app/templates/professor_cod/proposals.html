@@ -69,16 +69,16 @@
                     <h4 class="panel-title">
                         <div class="row">
                             <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ item.id }}">
-                                <div class="col-md-10 pagination-centered">{{ item.course_name }}</div>
+                                <div class="col-md-9 pagination-centered">{{ item.course_name }}</div>
                             </a>
 
-                            <div class="pkg-opt">
-                                <div class="col-md-1">
+                            <div class="pkg-opt col-md-3">
+                                <div class="col-md-6 pagination-centered">
                                     <div class="checkbox{{ item.id }}">
-                                        <label><input type="checkbox" name="checkbox">Accept?</label>
+                                        <label><input type="checkbox" name="checkbox"> Accept?</label>
                                     </div>
                                 </div>
-                                <div class="col-md-1 pagination-centered pull-right">
+                                <div class="col-md-6 pagination-centered pull-right">
                                     <label>
                                         <select class="package{{ item.id }}">
                                             {% for pckg in data.packages %}
