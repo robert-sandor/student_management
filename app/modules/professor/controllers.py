@@ -29,8 +29,8 @@ def get_students_for_course(course_id):
             selected_course = course
             for evaluation in course.evaluation:
                 student = evaluation.contract.student
-                grades = list([(grade.grade, grade.evaluation_date, grade.id) for grade in evaluation.grades])
-                final_grade = max(grades, key=lambda x: x[0] if x[0] else 0)[0] if grades else 0
+                grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in evaluation.grades])
+                final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0)["grade"] if grades else 0
                 students.append({"student": student, "grades": grades, "final_grade": final_grade})
     data = {"username": current_user.username, "role": current_user.role, "email": current_user.email,
             "courses": courses, "selected_course": selected_course, "students": students}
