@@ -9,17 +9,17 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 # Define the database - we are working with
 # SQLite for this example
 
-USERNAME = 'rmoctqhqiwmhtt'
-PASSWORD = 'rEpdEgINldp49c7FAAjFp1sGxI'
-SERVER   = 'ec2-54-217-202-109.eu-west-1.compute.amazonaws.com'
-DATABASE = 'dccjnekvon43ce'
-SQLALCHEMY_DATABASE_URI = 'postgresql://' + USERNAME + ':' + PASSWORD + '@' + SERVER + '/' + DATABASE
-
-# USERNAME = 'victor'
-# PASSWORD = ''
-# SERVER   = 'localhost'
-# DATABASE = 'my_db'
+# USERNAME = 'rmoctqhqiwmhtt'
+# PASSWORD = 'rEpdEgINldp49c7FAAjFp1sGxI'
+# SERVER   = 'ec2-54-217-202-109.eu-west-1.compute.amazonaws.com'
+# DATABASE = 'dccjnekvon43ce'
 # SQLALCHEMY_DATABASE_URI = 'postgresql://' + USERNAME + ':' + PASSWORD + '@' + SERVER + '/' + DATABASE
+
+USERNAME = 'victor'
+PASSWORD = ''
+SERVER   = 'localhost'
+DATABASE = 'my_db'
+SQLALCHEMY_DATABASE_URI = 'postgresql://' + USERNAME + ':' + PASSWORD + '@' + SERVER + '/' + DATABASE
 
 
 # SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
