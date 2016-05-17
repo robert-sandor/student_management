@@ -15,6 +15,33 @@
             padding-top: 1%;
         }
     </style>
+    <script>
+        function save_changes() {
+            var section_dates = [];
+            $("row").each(function() {
+                section_dates.push({
+                            type: $(this).find("label.section").attr('id'),
+                            from: $(this).find("input.from").val(),
+                            to: $(this).find("input.to").val()
+                        }
+                );
+            });
+            var json = JSON.stringify(section_dates, null, '\t');
+            console.log(json);
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('admin_staff.save') }}",
+                data: json,
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    window.location = response;
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
     <script type="text/javascript">
         $(".form_datetime").datetimepicker({
             format: "dd MM yyyy - hh:ii",
@@ -28,8 +55,7 @@
 
 
 {% block content %}
-    {{ super() }}
-    <a class="btn btn-default" role="button">Save</a>
+    <a class="btn btn-default" role="button" onclick="save_changes()">Save</a>
     <div class="panel panel-default">
         <div class="panel-title">
             <div class="row">
@@ -44,9 +70,9 @@
         {% for item in data.dates %}
             <div class="panel panel-default">
                 <div class="panel-body">
-                        <div class="row">
-                            <div class="col-md-1 pagination-centered pull-left">
-                                <label>
+                        <div class="row" id="row">
+                            <div class="col-md-1 pagination-centered pull-left" id="section">
+                                <label class="section" id={{ item.type }}>
                                     {% if item.type == 1 %}
                                         Contract
                                     {% endif %}
@@ -61,8 +87,8 @@
                                     {% endif %}
                                 </label>
                             </div>
-                            <input size="16" type="text" value={{ item.from_date }} readonly class="form_datetime">
-                            <input size="16" type="text" value={{ item.to }} readonly class="form_datetime">
+                            <input class="from" size="16" type="text" value={{ item.from_date }}>
+                            <input class="to" size="16" type="text" value={{ item.to }}>
                         </div>
                 </div>
             </div>
