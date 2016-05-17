@@ -84,12 +84,35 @@
 
 {% block navigation %}
     {{ super() }}
+    <li>{% if data.ranks[data.rank_prof] >= 1 %}
+        <a href="javascript:" data-toggle="collapse" data-target="#demo">Proposals</a>
+	    <ul id="demo" class="collapse">
+            <li>
+    			<a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
+            </li>
+            <li>
+    			<a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
+            </li>
+    	</ul>
+
+        {% else %}
+            <ul id="demo" class="collapse">
+            <li class="disabled">
+    			<a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
+            </li>
+            <li class="disabled">
+    			<a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
+            </li>
+    	</ul>
+        {% endif %}
+
+    </li>
     <li>
-        <a href="javascript:" data-toggle="collapse" data-target="#demo"> Grading</a>
-        <ul id="demo" class="collapse">
+        <a href="#collapse1" data-toggle="collapse"> Grading</a>
+	    <ul id="collapse1" class="panel-collapse collapse">
             {% for course in data.courses %}
                 <li><a href="/prof/grading/{{course.id}}">{{ course.course_name }}</a></li>
             {% endfor %}
-        </ul>
+	    </ul>
     </li>
 {% endblock %}

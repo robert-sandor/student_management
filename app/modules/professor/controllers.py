@@ -1,31 +1,35 @@
-from app import login_required, db
-from app.modules.common.models import Professor, Course, Student, GradeEvaluation
-from flask import Blueprint, render_template, request, url_for
+from app import db
 from app import login_required
-from flask import Blueprint, render_template, request
-from flask_login import current_user
+from app.modules.common.models import Course, GradeEvaluation
 from app.modules.common.models import Professor, ProposedCourses
 from app.modules.professor.forms import ProposalForm
+from config import SQLALCHEMY_DATABASE_URI
+from flask import Blueprint, render_template, request
+from flask import url_for
+from flask_login import current_user
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from config import SQLALCHEMY_DATABASE_URI
 
 professor_blueprint = Blueprint('professor', __name__, url_prefix='/prof')
 
+ranks = {"doctorand": 0,
+         "asistent": 1,
+         "conferentiar": 2,
+         "lector": 3,
+         "prof": 4}
 
 @professor_blueprint.route('/home/', methods=['GET'])
 @login_required(2)
 def home():
     professor = Professor.query.filter_by(id_user=current_user.get_id()).first()
     courses = __get_professor_courses(professor)
-    ranks = {"doctorand": 0,
-             "asistent": 1,
-             "conferentiar": 2,
-             "lector": 3,
-             "prof": 4}
 
-    data = {"username": current_user.username, "role": current_user.role, "email": current_user.email,
-            "selected_course": None, "courses": courses, "rank_prof": prof.rank,
+    data = {"username": current_user.username,
+            "role": current_user.role,
+            "email": current_user.email,
+            "selected_course": None,
+            "courses": courses,
+            "rank_prof": professor.rank,
             "ranks": ranks}
     return render_template("professor/professor.html", data=data)
 
@@ -36,11 +40,6 @@ def add_proposal():
     prof = Professor.query.filter_by(id_user=current_user.id).first()
     proposed_courses = ProposedCourses.query.filter_by(professor_id=prof.id).all()
     form = ProposalForm(request.form)
-    ranks = {"doctorand": 0,
-             "asistent": 1,
-             "conferentiar": 2,
-             "lector": 3,
-             "prof": 4}
 
     data = {"username": current_user.username,
             "role": current_user.role,
@@ -71,15 +70,19 @@ def add_proposal():
 @login_required(2)
 def view_proposals():
     prof = Professor.query.filter_by(id_user=current_user.id).first()
+    courses = __get_professor_courses(prof)
     proposed_courses = ProposedCourses.query.filter_by(professor_id=prof.id).all()
     data = {"username": current_user.username,
             "role": current_user.role,
             "email": current_user.email,
             "rank_prof": prof.rank,
+            "ranks": ranks,
             "no_proposals": proposed_courses.__len__(),
             "max_proposals": 2,
-            "proposals": proposed_courses}
+            "proposals": proposed_courses,
+            "courses": courses}
     return render_template("professor/view_proposals.html", data=data)
+
 
 @professor_blueprint.route('/grading/<course_id>', methods=['GET'])
 @login_required(2)
@@ -93,11 +96,18 @@ def get_students_for_course(course_id):
             selected_course = course
             for evaluation in course.evaluation:
                 student = evaluation.contract.student
-                grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in evaluation.grades])
+                grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in
+                               evaluation.grades])
                 final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0)["grade"] if grades else 0
                 students.append({"student": student, "grades": grades, "final_grade": final_grade})
-    data = {"username": current_user.username, "role": current_user.role, "email": current_user.email,
-            "courses": courses, "selected_course": selected_course, "students": students}
+    data = {"username": current_user.username,
+            "role": current_user.role,
+            "email": current_user.email,
+            "courses": courses,
+            "rank_prof": current_proffesor.rank,
+            "ranks": ranks,
+            "selected_course": selected_course,
+            "students": students}
 
     return render_template("professor/grading.html", data=data)
 
@@ -127,10 +137,8 @@ def save():
 
 def __save_grade(grade_id, value):
     if value is not "" or value is None:
-        print("-" + value + "-")
         GradeEvaluation.query.filter_by(id=grade_id).update(dict(grade=int(value)))
         db.session.commit()
-
 
 
 def __get_professor_courses(professor) -> [Course]:
