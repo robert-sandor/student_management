@@ -18,6 +18,7 @@ ranks = {"doctorand": 0,
          "lector": 3,
          "prof": 4}
 
+
 @professor_blueprint.route('/home/', methods=['GET'])
 @login_required(2)
 def home():

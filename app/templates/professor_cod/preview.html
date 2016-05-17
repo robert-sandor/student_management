@@ -18,7 +18,15 @@
 {% block navigation %}
     {{ super() }}
     <li>
-        <a href="/prof_cod/proposals" class="active">Proposals</a>
+        <a href="{{ url_for('professor_cod.proposals') }}" class="active">Proposals</a>
+    </li>
+    <li>
+        <a href="#collapse1" data-toggle="collapse"> Grading</a>
+	    <ul id="collapse1" class="panel-collapse collapse">
+            {% for course in data.courses %}
+                <li><a href="/prof_cod/grading/{{course.id}}">{{ course.course_name }}</a></li>
+            {% endfor %}
+	    </ul>
     </li>
 {% endblock %}
 
