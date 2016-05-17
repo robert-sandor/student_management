@@ -24,7 +24,6 @@ def signin():
                 3: 'professor_cod.home',
                 4: 'admin_staff.home'
             }
-
             if user.role in range(1, user_routes.__len__() + 1):
                 login_user(user)
                 return redirect(url_for(user_routes[user.role]))

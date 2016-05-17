@@ -10,14 +10,19 @@
 
 {% block content %}
     {{ super() }}
-    Welcome!
+    {{ data }}
 {% endblock %}
 
-{% block username %}{{data.username}}{% endblock %}
+{% block username %}{{ data.username }}{% endblock %}
 
 {% block navigation %}
     {{ super() }}
     <li>
-        <a href="{{ url_for('professor_cod.proposals') }}">Proposals</a>
+        <a href="/prof_cod/proposals" class="active">Proposals</a>
     </li>
+{% endblock %}
+
+
+{% block additional_js %}
+
 {% endblock %}
