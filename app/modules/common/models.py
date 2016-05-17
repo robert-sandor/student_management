@@ -1,6 +1,6 @@
-# coding: utf-8
 from sqlalchemy import Boolean, Column, Date, ForeignKey, ForeignKeyConstraint, Integer, SmallInteger, String, text
 from sqlalchemy.orm import relationship
+
 from app import db
 
 
@@ -23,6 +23,7 @@ class Contract(db.Model):
     student_id = Column(ForeignKey('student.id'), nullable=False)
 
     student = relationship('Student')
+    evaluation = relationship('Evaluation')
 
 
 class GradeEvaluation(db.Model):
