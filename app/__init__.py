@@ -44,14 +44,14 @@ def login_required(role=0):
 from app.modules.controller import base_page
 from app.modules.admin_staff.controllers import admin_staff
 from app.modules.mod_auth.controllers import mod_auth
-from app.modules.professor.controllers import professor
+from app.modules.professor.controllers import professor_blueprint
 from app.modules.professor_cod.controllers import professor_cod
 from app.modules.student.controllers import student
 
 app.register_blueprint(base_page)
 app.register_blueprint(admin_staff)
 app.register_blueprint(mod_auth)
-app.register_blueprint(professor)
+app.register_blueprint(professor_blueprint)
 app.register_blueprint(professor_cod)
 app.register_blueprint(student)
 

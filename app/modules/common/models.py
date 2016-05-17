@@ -71,6 +71,7 @@ class Student(db.Model):
 
     semigroup = relationship('Semigroup')
     user = relationship('User')
+    contract = relationship('Contract')
 
 
 class StudyGroup(db.Model):
@@ -105,6 +106,7 @@ class Evaluation(db.Model):
 
     contract = relationship('Contract')
     course = relationship('Course')
+    grades = relationship('GradeEvaluation')
 
 
 class Course(db.Model):
@@ -121,6 +123,10 @@ class Course(db.Model):
     is_optional = Column(Boolean, nullable=False, server_default=text("true"))
 
     semester = relationship('Semester')
+
+    professors_role = relationship('ProfessorRole')
+
+    evaluation = relationship('Evaluation')
 
 
 class Department(db.Model):
@@ -238,6 +244,8 @@ class Professor(db.Model):
 
     department = relationship('Department', primaryjoin='Professor.id_department == Department.id')
     auth_user = relationship('User')
+
+    professor_roles = relationship('ProfessorRole')
 
     def is_cod(self):
         if self.department.id_cod == self.id:
