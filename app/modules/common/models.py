@@ -237,6 +237,9 @@ class Professor(db.Model):
     department = relationship('Department', primaryjoin='Professor.id_department == Department.id')
     auth_user = relationship('User')
 
+    def __repr__(self):
+        return '<Professor %r>' % self.id
+
 
 class ProfessorRole(db.Model):
     __tablename__ = 'professor_role'
@@ -248,4 +251,29 @@ class ProfessorRole(db.Model):
     course = relationship('Course')
     professor = relationship('Professor')
     role_type = relationship('RoleType')
+
+    def __repr__(self):
+        return '<Professor role %r>' % self.role_type_id
+
+
+class ProposedCourses(db.Model):
+    __tablename__ = 'proposed_courses'
+
+    id = Column(Integer, primary_key=True, unique=True)
+    professor_id = Column(ForeignKey('professor.id'), nullable=False)
+    speciality = Column(String(50), nullable=False)
+    study_line = Column(String(50), nullable=False)
+    description = Column(String(1000), nullable=False)
+    course_name = Column(String(50), nullable=False)
+
+    professor = relationship('Professor')
+
+    def __init__(self, professor_id, course_name, speciality, study_line, description):
+        self.professor_id = professor_id
+        self.course_name = course_name
+        self.speciality = speciality
+        self.study_line = study_line
+        self.description = description
+
+
 
