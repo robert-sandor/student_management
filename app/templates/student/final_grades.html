@@ -1,0 +1,40 @@
+{% extends "student/welcome.html" %}
+
+{% block title %}Student grades{% endblock %}
+
+{% block page_title %}Student grades{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+  <h2>{{ data.firstname }} {{ data.lastname }}'s grades</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Course</th>
+        <th>Passed</th>
+        <th>Date</th>
+        <th>Grade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ data.course }}</td>
+        <td>{{ data.passed }}</td>
+        <td>{{ data.firstdate }}</td>
+        <td>{{ data.firstgrade }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block username %}{{ super() }}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+{% endblock %}

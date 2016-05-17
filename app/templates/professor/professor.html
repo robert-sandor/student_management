@@ -1,0 +1,49 @@
+{% extends "common/base.html" %}
+
+{% block title %}Professor frontpage{% endblock %}
+
+{% block page_title %}Professor frontpage{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <br>
+    Email: {{ data.email }} <br>
+    Role: {{ data.role }} <br>
+    Rank: {{ data.rank_prof }}
+{% endblock %}
+
+{% block username %}{{data.username}}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li>{% if data.ranks[data.rank_prof] >= 1 %}
+        <a href="javascript:" data-toggle="collapse" data-target="#demo">Proposals</a>
+	    <ul id="demo" class="collapse">
+            <li>
+    			<a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
+            </li>
+            <li>
+    			<a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
+            </li>
+    	</ul>
+
+        {% else %}
+            <ul id="demo" class="collapse">
+            <li class="disabled">
+    			<a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
+            </li>
+            <li class="disabled">
+    			<a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
+            </li>
+    	</ul>
+        {% endif %}
+
+    </li>
+    <li>
+        <a href="#">Grading</a>
+    </li>
+{% endblock %}
