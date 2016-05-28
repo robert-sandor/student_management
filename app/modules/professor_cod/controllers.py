@@ -1,7 +1,9 @@
 from app import login_required, db
-from app.modules.common.models import OptionalCourse, Course, Package, Professor, GradeEvaluation, ProposedCourses
+from app.modules.common.models import OptionalCourse, Course, Package, Professor, GradeEvaluation, ProposedCourses, \
+    Semester
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for
 from flask_login import current_user
+from random import random, randint
 
 professor_cod = Blueprint('professor_cod', __name__, url_prefix='/prof_cod')
 
@@ -24,13 +26,49 @@ def proposals():
 @professor_cod.route('/proposals/save/', methods=['POST'])
 @login_required(3)
 def save():
-    # data = {}
-    # for pack in request.json.keys():
-    #     pack_name = Package.query.filter_by(id=int(pack)).first().name
-    #     courses = request.json[pack]
-    #     for course_id in courses:
-    #         OptionalCourse.query.filter_by(course_id=int(course_id)).update(dict(package_id=int(pack)))
-    #         db.session.commit()
+    for course in request.json.keys():
+        # Get the corresponding course
+        proposed_course = ProposedCourses.query.filter_by(id=int(course)).first()
+        # Get the latest semester
+        last_semester = Semester.query.order_by('id').first()
+
+        # Creating course, main entry in Courses table
+        # Course name and description setting
+        course_name = proposed_course.course_name
+        # Needs to be shortened since our course supports only 200 chars
+        course_description = proposed_course.description[:199]
+        # Generating some type of course code, todo: maybe better implementation?
+        course_code = str(proposed_course.speciality[0]).upper() + str(proposed_course.speciality[0]).upper() + str(
+                          randint(1000, 9999))
+        # Get data about package and professor
+        collected_data = request.json[course]
+        p = Professor.query.filter_by(id=collected_data['prof']).first()
+        # For credits set a default of 6, todo: set it directly on the column as default?
+        course_credits = 6
+        # For eval type set a default of C, todo: default on column
+        eval_type = 'C'
+        # Create course from give data
+        # Settings name as username, seeing as we don't have an ACTUAL name on the prof
+        highest_id = db.session.query(Course).order_by(Course.id.desc()).first().id + 1
+        c = Course(id=highest_id, course_name=course_name, course_description=course_description,
+                   code=course_code, professor_name=p.auth_user.username, credits=course_credits,
+                   evaluation_type=eval_type, is_optional=True)
+        c.semester = last_semester
+        db.session.add(c)
+        db.session.commit()
+        # Creating course, optional entry, in OptionalCourses table
+        # Setting of package and language, available directly on proposed course
+        package = collected_data['package']
+        language = proposed_course.study_line
+        # Get latest course added
+        c = db.session.query(Course).order_by(Course.id.desc()).first()
+        # Get the departament using the professor assigned
+        dept = p.department
+        oc = OptionalCourse(course_id=c.id, active=False, id_department=dept.id,
+                            package_id=package, course_language=language)
+
+        db.session.add(oc)
+        db.session.commit()
     return url_for('professor_cod.home')
 
 

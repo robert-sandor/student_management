@@ -26,8 +26,6 @@
                 selected.push($(this).parent().parent().prop('className'));
             });
 
-            var map_id_to_package = {};
-            var map_id_to_prof = {};
             var all = {};
             var i;
             for (i = 0, len = selected.length; i < len; i++) {
@@ -39,13 +37,11 @@
                         .filter(":selected").prop('className');
                 val = parseInt(val.replace(/[A-Za-z$-]/g, ""));
                 val1 = parseInt(val1.replace(/[A-Za-z$-]/g, ""));
-                map_id_to_package[val] = map_id_to_package[val] || [];
-                map_id_to_prof[val1] = map_id_to_prof[val1] || [];
-                map_id_to_package[val].push(selected[i].replace(/[A-Za-z$-]/g, ""));
-                map_id_to_prof[val1].push(selected[i].replace(/[A-Za-z$-]/g, ""));
+                var sel = selected[i].replace(/[A-Za-z$-]/g, "");
+                all[sel] = {};
+                all[sel]['package'] = val;
+                all[sel]['prof'] = val1;
             }
-            all['prof'] = map_id_to_prof;
-            all['pack'] = map_id_to_package;
             var json = JSON.stringify(all, null, '\t');
             console.log(json);
 
@@ -55,7 +51,7 @@
                 data: json,
                 contentType: 'application/json;charset=UTF-8',
                 success: function (response) {
-                    if (!jQuery.isEmptyObject(map_id_to_package)) {
+                    if (!jQuery.isEmptyObject(all)) {
                         alert("Succesfully set package!")
                         window.location = response;
                     }
