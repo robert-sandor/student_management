@@ -23,28 +23,12 @@ def home():
 @login_required(1)
 def grades_temporary():
     student = get_student(current_user.get_id())
-    # eval = get_evaluation(get_contract(student))
-    # grade_eval = get_grade_evaluation(get_contract(student))
-    # grades, dates = [], []
-    # for grade in grade_eval:
-    #     if not grade.present: grades.append("Absent")
-    #     else: grades.append(grade.grade)
-    #     dates.append(grade.evaluation_date)
-    # data = [{"username": current_user.username,
-    #         "email": current_user.email,
-    #         "role": current_user.role,
-    #         "course": get_course_name(eval.course_id).course_name,
-    #         "firstname": student.first_name,
-    #         "lastname": student.last_name,
-    #         "grades": grades,
-    #         "dates": dates
-    #         }]
     courses = []
     for contract in student.contract:
         for evaluation in contract.evaluation:
             course = get_course(evaluation.course_id)
             grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in
-                               evaluation.grade_evaluation])
+                               evaluation.grades])
             final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0) if grades else 0
             courses.append({"course": course.course_name, "grades": grades, "final_grade": final_grade})
     data = {"username": current_user.username,
@@ -66,7 +50,7 @@ def grades_final():
         for evaluation in contract.evaluation:
             course = get_course(evaluation.course_id)
             grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in
-                               evaluation.grade_evaluation])
+                               evaluation.grades])
             final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0) if grades else 0
             courses.append({"course": course.course_name, "grades": grades, "final_grade": final_grade})
     data = {"username": current_user.username,

@@ -108,7 +108,6 @@ class Evaluation(db.Model):
     contract = relationship('Contract')
     course = relationship('Course')
     grades = relationship('GradeEvaluation')
-    grade_evaluation = relationship('GradeEvaluation')
 
 
 class Course(db.Model):
