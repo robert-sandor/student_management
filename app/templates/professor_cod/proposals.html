@@ -27,16 +27,26 @@
             });
 
             var map_id_to_package = {};
+            var map_id_to_prof = {};
+            var all = {};
             var i;
             for (i = 0, len = selected.length; i < len; i++) {
                 var val = $(".package" + selected[i].replace(/[A-Za-z$-]/g, "")
                                 .toString()).children("option")
-                                .filter(":selected").prop('className');
+                        .filter(":selected").prop('className');
+                var val1 = $(".prof" + selected[i].replace(/[A-Za-z$-]/g, "")
+                                .toString()).children("option")
+                        .filter(":selected").prop('className');
                 val = parseInt(val.replace(/[A-Za-z$-]/g, ""));
-                map_id_to_package[val] =  map_id_to_package[val] || [];
+                val1 = parseInt(val1.replace(/[A-Za-z$-]/g, ""));
+                map_id_to_package[val] = map_id_to_package[val] || [];
+                map_id_to_prof[val1] = map_id_to_prof[val1] || [];
                 map_id_to_package[val].push(selected[i].replace(/[A-Za-z$-]/g, ""));
+                map_id_to_prof[val1].push(selected[i].replace(/[A-Za-z$-]/g, ""));
             }
-            var json = JSON.stringify(map_id_to_package, null, '\t');
+            all['prof'] = map_id_to_prof;
+            all['pack'] = map_id_to_package;
+            var json = JSON.stringify(all, null, '\t');
             console.log(json);
 
             $.ajax({
@@ -45,7 +55,7 @@
                 data: json,
                 contentType: 'application/json;charset=UTF-8',
                 success: function (response) {
-                    if(!jQuery.isEmptyObject(map_id_to_package)) {
+                    if (!jQuery.isEmptyObject(map_id_to_package)) {
                         alert("Succesfully set package!")
                         window.location = response;
                     }
@@ -69,32 +79,29 @@
                     <h4 class="panel-title">
                         <div class="row">
                             <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ item.id }}">
-                                <div class="col-md-9 pagination-centered">{{ item.course_name }}</div>
+                                <div class="col-md-7 pagination-centered">{{ item.course_name }}</div>
                             </a>
 
-                            <div class="pkg-opt col-md-3">
-                                <div class="col-md-6 pagination-centered">
+                            <div class="pkg-opt col-md-5">
+                                <div class="col-md-4 pagination-centered">
                                     <div class="checkbox{{ item.id }}">
-                                        {% for opt in data.opts %}
-                                        {% if item.id == opt.course_id and opt.active == true %}
-                                            <label><input type="checkbox" name="checkbox" checked> Accept?</label>
-                                        {% elif item.id == opt.course_id and opt.active == false %}
-                                            <label><input type="checkbox" name="checkbox"> Accept?</label>
-                                        {% endif %}
-                                        {% endfor %}
+                                        <label><input type="checkbox" name="checkbox"> Accept?</label>
                                     </div>
                                 </div>
-                                <div class="col-md-6 pagination-centered pull-right">
+                                <div class="col-md-4 pagination-centered pull-right">
+                                    <label>
+                                        <select class="prof{{ item.id }}">
+                                            {% for prof in data.profs %}
+                                                <option class="prof{{ prof.id }}">{{ prof.auth_user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="col-md-4 pagination-centered pull-right">
                                     <label>
                                         <select class="package{{ item.id }}">
                                             {% for pckg in data.packages %}
-                                                {% for opt in data.opts %}
-                                                {% if item.id == opt.course_id and pckg.id == opt.package_id %}
-                                                <option class="pckg{{ pckg.id }}" selected>{{ pckg.name }}</option>
-                                                {% else %}
                                                 <option class="pckg{{ pckg.id }}">{{ pckg.name }}</option>
-                                                {%  endif %}
-                                                {% endfor %}
                                             {% endfor %}
                                         </select>
                                     </label>
@@ -104,7 +111,7 @@
                     </h4>
                 </div>
                 <div id="collapse{{ item.id }}" class="panel-collapse collapse">
-                    <div class="panel-body">{{ item.course_description }}</div>
+                    <div class="panel-body">{{ item.description }}</div>
                 </div>
             </div>
         {% endfor %}
@@ -120,11 +127,11 @@
     </li>
     <li>
         <a href="#collapse1" data-toggle="collapse"> Grading</a>
-	    <ul id="collapse1" class="panel-collapse collapse">
+        <ul id="collapse1" class="panel-collapse collapse">
             {% for course in data.courses %}
-                <li><a href="/prof_cod/grading/{{course.id}}">{{ course.course_name }}</a></li>
+                <li><a href="/prof_cod/grading/{{ course.id }}">{{ course.course_name }}</a></li>
             {% endfor %}
-	    </ul>
+        </ul>
     </li>
 {% endblock %}
 
