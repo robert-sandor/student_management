@@ -71,6 +71,7 @@ class Student(db.Model):
 
     semigroup = relationship('Semigroup')
     user = relationship('User')
+    contract = relationship('Contract')
 
 
 class StudyGroup(db.Model):
@@ -105,6 +106,7 @@ class Evaluation(db.Model):
 
     contract = relationship('Contract')
     course = relationship('Course')
+    grade_evaluation = relationship('GradeEvaluation')
 
 
 class Course(db.Model):
@@ -121,6 +123,7 @@ class Course(db.Model):
     is_optional = Column(Boolean, nullable=False, server_default=text("true"))
 
     semester = relationship('Semester')
+    evaluation = relationship('Evaluation')
 
 
 class Department(db.Model):
