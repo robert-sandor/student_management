@@ -20,14 +20,12 @@
             var section_dates = [];
             $("row").each(function() {
                 section_dates.push({
-                            type: $(this).find("label.section").attr('id'),
-                            from: $(this).find("input.from").val(),
-                            to: $(this).find("input.to").val()
+                            "type": $(this).find("label.section").attr('id'),
+                            "from": $(this).find("input.from").val(),
+                            "to": $(this).find("input.to").val()
                         }
                 );
             });
-            console.log("type");
-            console.log(section_dates[0]["type"]);
             var json = JSON.stringify(section_dates, null, '\t');
             $.ajax({
                 type: "POST",
@@ -43,14 +41,14 @@
             });
         }
     </script>
-    <script type="text/javascript">
-        $(".form_datetime").datetimepicker({
-            format: "dd MM yyyy - hh:ii",
-            autoclose: true,
-            todayBtn: true,
-            pickerPosition: "bottom-left"
-        });
-    </script>
+{#    <script type="text/javascript">#}
+{#        $(".form_datetime").datetimepicker({#}
+{#            format: "dd MM yyyy - hh:ii",#}
+{#            autoclose: true,#}
+{#            todayBtn: true,#}
+{#            pickerPosition: "bottom-left"#}
+{#        });#}
+{#    </script>#}
 
 {% endblock %}
 
@@ -89,10 +87,10 @@
                                 </label>
                             </div>
                             <div class="col-md-2">
-                                <input class="from" size="16" type="text" value={{ item.from_date }}>
+                                <input class="from" size="16" type="text" value={{ item.from_date|string() }}>
                             </div>
                             <div class="col-md-2">
-                                <input class="to" size="16" type="text" value={{ item.to }}>
+                                <input class="to" size="16" type="text" value={{ item.to|string() }}>
                             </div>
                         </div>
                 </div>
