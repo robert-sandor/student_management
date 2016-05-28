@@ -1,6 +1,7 @@
 from app import login_required, db
 from flask import Blueprint,render_template, request
 from flask.ext.login import current_user
+from flask import url_for
 
 from app.modules.common.models import AdminStaff, AdminDates
 
@@ -17,7 +18,7 @@ def home():
     return render_template('admin/welcome.html', data=user_info)
 
 
-@admin_staff.route('/set_dates/', methods=['GET', 'POST'])
+@admin_staff.route('/set_dates/', methods=['GET'])
 @login_required(4)
 def set_dates():
     staff = get_staff(current_user.get_id())
@@ -34,21 +35,21 @@ def set_dates():
 @admin_staff.route('/set_dates/', methods=['POST'])
 @login_required(4)
 def save():
+    print("smth")
     print(request.json)
     for element in request.json:
         type_section = element["type"]
         from_date = element["from"]
         to_date = element["to"]
-        print(from_date)
+        print("blabla" + from_date)
         __save_date(type_section, from_date, to_date)
-
-    return url_for('admin_staff.set_dates', course_id=type)
+    return url_for('admin_staff.set_dates')
 
 
 def __save_date(section, from_date, to_date):
     if section is not "" or section is None:
         print("section-" + section + "-")
-        AdminDates.query.filter_by(type=type).update(from_date=from_date, to=to_date)
+        AdminDates.query.filter_by(type=section).update(from_date=from_date, to=to_date)
         db.session.commit()
 
 

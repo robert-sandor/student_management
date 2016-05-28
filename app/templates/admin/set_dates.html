@@ -26,8 +26,9 @@
                         }
                 );
             });
+            console.log("type");
+            console.log(section_dates[0]["type"]);
             var json = JSON.stringify(section_dates, null, '\t');
-            console.log(json);
             $.ajax({
                 type: "POST",
                 url: "{{ url_for('admin_staff.save') }}",
@@ -55,13 +56,13 @@
 
 
 {% block content %}
-    <a class="btn btn-default" role="button" onclick="save_changes()">Save</a>
+    <div class="panel"><a class="btn btn-primary" role="button" onclick="save_changes()">Save</a></div>
     <div class="panel panel-default">
         <div class="panel-title">
             <div class="row">
-                <div class="col-md-1 pagination-centered pull-left"><label>SECTION</label></div>
-                <div class="col-md-1 pagination-centered pull-right"><label>TO</label></div>
-                <div class="col-md-1 pagination-centered pull-right"><label>FROM</label></div>
+                <div class="col-md-2"><label>SECTION</label></div>
+                <div class="col-md-2"><label>TO</label></div>
+                <div class="col-md-2"><label>FROM</label></div>
             </div>
         </div>
     </div>
@@ -71,7 +72,7 @@
             <div class="panel panel-default">
                 <div class="panel-body">
                         <div class="row" id="row">
-                            <div class="col-md-1 pagination-centered pull-left" id="section">
+                            <div class="col-md-2" id="section">
                                 <label class="section" id={{ item.type }}>
                                     {% if item.type == 1 %}
                                         Contract
@@ -87,8 +88,12 @@
                                     {% endif %}
                                 </label>
                             </div>
-                            <input class="from" size="16" type="text" value={{ item.from_date }}>
-                            <input class="to" size="16" type="text" value={{ item.to }}>
+                            <div class="col-md-2">
+                                <input class="from" size="16" type="text" value={{ item.from_date }}>
+                            </div>
+                            <div class="col-md-2">
+                                <input class="to" size="16" type="text" value={{ item.to }}>
+                            </div>
                         </div>
                 </div>
             </div>
