@@ -115,3 +115,4 @@ fabric.properties
 
 # Thing we really fkin don't know if it is good to remove
 .idea/student_management.iml
+.idea/StudentManagement.iml

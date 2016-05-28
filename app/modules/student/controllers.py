@@ -23,22 +23,21 @@ def home():
 @login_required(1)
 def grades_temporary():
     student = get_student(current_user.get_id())
-    eval = get_evaluation(get_contract(student))
-    grade_eval = get_grade_evaluation(get_contract(student))
-    grades, dates = [], []
-    for grade in grade_eval:
-        if not grade.present: grades.append("Absent")
-        else: grades.append(grade.grade)
-        dates.append(grade.evaluation_date)
-    data = [{"username": current_user.username,
-            "email": current_user.email,
+    courses = []
+    for contract in student.contract:
+        for evaluation in contract.evaluation:
+            course = get_course(evaluation.course_id)
+            grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in
+                               evaluation.grades])
+            final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0) if grades else 0
+            courses.append({"course": course.course_name, "grades": grades, "final_grade": final_grade})
+    data = {"username": current_user.username,
             "role": current_user.role,
-            "course": get_course_name(eval.course_id).course_name,
-            "firstname": student.first_name,
-            "lastname": student.last_name,
-            "grades": grades,
-            "dates": dates
-            }]
+            "first_name": student.first_name,
+            "last_name": student.last_name,
+            "email": current_user.email,
+            "courses": courses
+            }
     return render_template('student/temporary_grades.html', data=data)
 
 
@@ -46,18 +45,20 @@ def grades_temporary():
 @login_required(1)
 def grades_final():
     student = get_student(current_user.get_id())
-    contract = get_contract(student)
-    eval = get_evaluation(contract)
-    # grade_eval = get_grade_evaluation(contract)
-    grade_eval = get_final_evaluation(contract)
-    data = { "role": current_user.role,
-            "firstdate": grade_eval.evaluation_date,
-            "firstgrade": grade_eval.max_grade,
-            "passed": eval._pass,
-            "course": get_course_name(eval.course_id).course_name,
-            "firstname": student.first_name,
-            "lastname": student.last_name,
-            "username": current_user.username
+    courses = []
+    for contract in student.contract:
+        for evaluation in contract.evaluation:
+            course = get_course(evaluation.course_id)
+            grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in
+                               evaluation.grades])
+            final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0) if grades else 0
+            courses.append({"course": course.course_name, "grades": grades, "final_grade": final_grade})
+    data = {"username": current_user.username,
+            "role": current_user.role,
+            "first_name": student.first_name,
+            "last_name": student.last_name,
+            "email": current_user.email,
+            "courses": courses
             }
     return render_template('student/final_grades.html', data=data)
 
@@ -74,7 +75,7 @@ def get_evaluation(contract) -> [Evaluation]:
     return db.session.query(Evaluation).filter(Contract.student, Evaluation.contract, Evaluation.course).filter_by(contract_id=contract.id).first()
 
 
-def get_course_name(course_id) -> [Course]:
+def get_course(course_id) -> [Course]:
     return Course.query.filter_by(id=course_id).first()
 
 

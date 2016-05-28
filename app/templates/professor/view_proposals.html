@@ -1,8 +1,8 @@
 {% extends "common/base.html" %}
 
-{% block title %}Professor frontpage{% endblock %}
+{% block title %}Proposals{% endblock %}
 
-{% block page_title %}Professor frontpage{% endblock %}
+{% block page_title %}Proposals{% endblock %}
 
 {% block head %}
     {{ super() }}
@@ -11,16 +11,28 @@
 {% block content %}
     {{ super() }}
     <br>
-    Email: {{ data.email }} <br>
-    Role: {{ data.role }} <br>
-    Rank: {{ data.rank_prof }}
+    <h3>Submitted proposals</h3><hr>
+    <div class="container-fluid">
+        {% for proposal in data.proposals %}
+            <div class="jumbotron">
+                <p>Course name: {{ proposal.course_name }}</p>
+                <p>Speciality:  {{ proposal.speciality }}</p>
+                <p>Study line:  {{ proposal.study_line }}</p>
+                <p>Description: {{ proposal.description }}</p>
+                <p class="text-right">
+                    <button class="btn btn-default btn-lg">Modify</button>
+                    <button class="btn btn-default btn-lg">Delete</button>
+                </p>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
 
 {% block username %}{{data.username}}{% endblock %}
 
 {% block navigation %}
     {{ super() }}
-    <li>{% if data.ranks[data.rank_prof] >= 1 %}
+    <li>
         <a href="javascript:" data-toggle="collapse" data-target="#demo">Proposals</a>
 	    <ul id="demo" class="collapse">
             <li>
@@ -30,20 +42,7 @@
     			<a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
             </li>
     	</ul>
-
-        {% else %}
-            <ul id="demo" class="collapse">
-            <li class="disabled">
-    			<a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
-            </li>
-            <li class="disabled">
-    			<a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
-            </li>
-    	</ul>
-        {% endif %}
-
     </li>
-
     <li>
         <a href="#collapse1" data-toggle="collapse"> Grading</a>
 	    <ul id="collapse1" class="panel-collapse collapse">

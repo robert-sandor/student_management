@@ -1,0 +1,101 @@
+{% extends "common/base.html" %}
+
+{% block title %}Proposals{% endblock %}
+
+{% block page_title %}Proposals{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <script type="text/javascript">
+
+    </script>
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+
+    {% macro render_field(field, placeholder=None) %}
+        {% if field.errors %}
+        {% elif field.flags.error %}
+        {% else %}
+        {% endif %}
+        {% set css_class = 'form-control' + kwargs.pop('class', '') %}
+        {{ field(class=css_class, placeholder=placeholder, required=True, **kwargs) }}
+    {% endmacro %}
+
+    <p class="text-right">
+        You have submitted {{ data.no_proposals }} proposals currently. You have {{ data.max_proposals - data.no_proposals }} available.
+    </p>
+    <h3>  New proposal</h3>
+    <hr>
+    <div class="container-fluid">
+    <form class="form-horizontal" method="POST" action="." accept-charset="UTF-8" role="form">
+  {% with errors = get_flashed_messages(category_filter=["error"]) %}
+            {% if errors %}
+                <div>
+                    {% for error in errors %}
+                        {{ error }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if form.errors %}
+            <div class="error">
+                {% for field, error in form.errors.items() %}
+                    {% for e in error %}
+                        {{ e }}<br>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        {{ form.csrf_token }}
+            <div class="form-group">{{ form.course_name.label }} {{ render_field(form.course_name,
+                                                                    placeholder="Course name", autofocus="") }}</div>
+            <div class="form-group">{{ form.speciality.label }} {{ render_field(form.speciality,
+                                                                    placeholder="Speciality") }}</div>
+            <div class="form-group">{{ form.study_line.label }} {{ render_field(form.study_line,
+                                                                    placeholder="Study line") }}</div>
+            <div class="form-group">{{ form.description.label }} {{ render_field(form.description,
+                                                                    placeholder="Description", rows="10") }}</div>
+
+    <br>
+    <p class="text-right">
+        {% if data.no_proposals < data.max_proposals %}
+            <button class="btn btn-default" type="submit" name="submit">Complete</button>
+            <button class="btn btn-default">View</button>
+        {% else %}
+            <button class="btn btn-default" type="submit" name="submit" disabled="disabled">Complete</button>
+            <button class="btn btn-default">View</button>
+        {% endif %}
+    </p>
+    </form>
+    </div>
+
+
+{% endblock %}
+
+{% block username %}{{data.username}}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li>
+        <a href="javascript:" data-toggle="collapse" data-target="#demo">Proposals</a>
+	    <ul id="demo" class="collapse">
+            <li>
+    			<a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
+            </li>
+            <li>
+    			<a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
+            </li>
+    	</ul>
+    </li>
+   <li>
+        <a href="#collapse1" data-toggle="collapse"> Grading</a>
+	    <ul id="collapse1" class="panel-collapse collapse">
+            {% for course in data.courses %}
+                <li><a href="/prof/grading/{{course.id}}">{{ course.course_name }}</a></li>
+            {% endfor %}
+	    </ul>
+    </li>
+{% endblock %}

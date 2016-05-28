@@ -1,0 +1,134 @@
+{% extends "common/base.html" %}
+
+{% block title %}COD frontpage{% endblock %}
+
+{% block page_title %}COD frontpage{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        a:link {
+            text-decoration: none;
+            color: black;
+        }
+
+        .pagination-centered {
+            padding-top: 1%;
+        }
+    </style>
+
+    <script>
+        function checkAccept() {
+            var opts = [];
+            var selected = [];
+            $('.row input:checked').each(function () {
+                opts.push($(this));
+                selected.push($(this).parent().parent().prop('className'));
+            });
+
+            var map_id_to_package = {};
+            var i;
+            for (i = 0, len = selected.length; i < len; i++) {
+                var val = $(".package" + selected[i].replace(/[A-Za-z$-]/g, "")
+                                .toString()).children("option")
+                                .filter(":selected").prop('className');
+                val = parseInt(val.replace(/[A-Za-z$-]/g, ""));
+                map_id_to_package[val] =  map_id_to_package[val] || [];
+                map_id_to_package[val].push(selected[i].replace(/[A-Za-z$-]/g, ""));
+            }
+            var json = JSON.stringify(map_id_to_package, null, '\t');
+            console.log(json);
+
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('professor_cod.save') }}",
+                data: json,
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    if(!jQuery.isEmptyObject(map_id_to_package)) {
+                        alert("Succesfully set package!")
+                        window.location = response;
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <a class="btn btn-default" role="button" onclick="checkAccept()">Save</a>
+    <div class="panel-group" id="accordion">
+        {% for item in data.proposals %}
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <div class="row">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ item.id }}">
+                                <div class="col-md-9 pagination-centered">{{ item.course_name }}</div>
+                            </a>
+
+                            <div class="pkg-opt col-md-3">
+                                <div class="col-md-6 pagination-centered">
+                                    <div class="checkbox{{ item.id }}">
+                                        {% for opt in data.opts %}
+                                        {% if item.id == opt.course_id and opt.active == true %}
+                                            <label><input type="checkbox" name="checkbox" checked> Accept?</label>
+                                        {% elif item.id == opt.course_id and opt.active == false %}
+                                            <label><input type="checkbox" name="checkbox"> Accept?</label>
+                                        {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6 pagination-centered pull-right">
+                                    <label>
+                                        <select class="package{{ item.id }}">
+                                            {% for pckg in data.packages %}
+                                                {% for opt in data.opts %}
+                                                {% if item.id == opt.course_id and pckg.id == opt.package_id %}
+                                                <option class="pckg{{ pckg.id }}" selected>{{ pckg.name }}</option>
+                                                {% else %}
+                                                <option class="pckg{{ pckg.id }}">{{ pckg.name }}</option>
+                                                {%  endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </h4>
+                </div>
+                <div id="collapse{{ item.id }}" class="panel-collapse collapse">
+                    <div class="panel-body">{{ item.course_description }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block username %}{{ data.username }}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li>
+        <a href="{{ url_for('professor_cod.proposals') }}" class="active">Proposals</a>
+    </li>
+    <li>
+        <a href="#collapse1" data-toggle="collapse"> Grading</a>
+	    <ul id="collapse1" class="panel-collapse collapse">
+            {% for course in data.courses %}
+                <li><a href="/prof_cod/grading/{{course.id}}">{{ course.course_name }}</a></li>
+            {% endfor %}
+	    </ul>
+    </li>
+{% endblock %}
+
+
+{% block additional_js %}
+
+{% endblock %}

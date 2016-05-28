@@ -8,13 +8,13 @@
 
     <style type="text/css">
         body {
-            padding-top: 40px;
-            padding-bottom: 40px;
+            padding-top: 150px;
+            padding-bottom: 150px;
             background-color: #eee;
         }
 
         .form-signin {
-            max-width: 330px;
+            max-width: 480px;
             padding: 15px;
             margin: 0 auto;
         }
@@ -53,56 +53,72 @@
             border-top-left-radius: 0;
             border-top-right-radius: 0;
         }
-        
-        .error {
-            text-color:red;
-        }
     </style>
 </head>
 <body>
-{% macro render_field(field, placeholder=None) %}
-    {% if field.errors %}
-    {% elif field.flags.error %}
-    {% else %}
-    {% endif %}
-{% set css_class = 'form-control ' + kwargs.pop('class', '') %}
-{{ field(class=css_class, placeholder=placeholder, required=True, **kwargs) }}
-{% endmacro %}
+    <div class="container">
 
-<div class="container">
-    <form class="form-signin" method="POST" action="." accept-charset="UTF-8" role="form">
-        <h3 class="form-signin-heading">Sign in</h3>
-        {% with errors = get_flashed_messages(category_filter=["error"]) %}
-            {% if errors %}
-                <div>
-                    {% for error in errors %}
-                        {{ error }}<br>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-
-        {% if form.errors %}
-            <div class="error">
-                {% for field, error in form.errors.items() %}
-                    {% for e in error %}
-                        {{ e }}<br>
-                    {% endfor %}
-                {% endfor %}
+        <!--form used for signing in        -->
+        <form action="{{ url_for('auth.signin') }}" class="form-signin" method="POST">
+            
+            {{ form.hidden_tag() }}
+        
+            <h3>Welcome to Student Management</h3>
+            <hr />
+            <h3>Sign in</h3>
+            
+            <!--flash error messages-->
+            {% with messages = get_flashed_messages() %}
+            
+                {% if messages %}
+                
+                    <div class="alert alert-danger">
+                        
+                        {% for message in messages %}
+                        
+                            <strong>Error : </strong>{{message}} 
+                        
+                        {% endfor %}
+                        
+                    </div>
+                
+                {% endif %}
+                
+            {% endwith %}
+            
+            <!--email field-->
+            <div class="form-group">
+                
+                {{ form.email(class="form-control", placeholder="Email Address") }}
+                
             </div>
-        {% endif %}
-        {{ form.csrf_token }}
-        {{ render_field(form.email, placeholder="Email Address",
-                                  autofocus="") }}
-        {{ render_field(form.password, placeholder="Password") }}
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" name="remember" value="1"> Remember me
-            </label>
-            <!--<a role="button" href="">Forgot your password?</a><span class="clearfix"></span>-->
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit" name="submit">Sign in</button>
-    </form>
-</div>
+            
+            <!--password field-->
+            <div class="form-group">
+                
+                {{ form.password(class="form-control", placeholder="Password") }}
+                
+            </div>
+            
+            <!--remember me field-->
+            <div class="form-group checkbox">
+                <label>
+                    
+                    {{ form.remember }}
+                    {{ form.remember.label(style="color:#555;") }}
+                    
+                </label>
+                
+            </div>
+            
+            <!--submit button-->
+            <div class="form-group">
+                
+                <button class="btn btn-primary btn-lg" type="submit">Sign In</button>
+                
+            </div>
+            
+        </form>
+    </div>
 </body>
 </html>
