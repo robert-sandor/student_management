@@ -18,6 +18,8 @@
 
 {% block username %}{{data.username}}{% endblock %}
 
+{% block settings %} <a href="{{ url_for("professor.settings") }}">Settings</a> {% endblock %}
+
 {% block navigation %}
     {{ super() }}
     <li>{% if data.ranks[data.rank_prof] >= 1 %}

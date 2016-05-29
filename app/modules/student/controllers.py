@@ -1,7 +1,8 @@
+from app.modules.common.controllers import passchange
 from sqlalchemy import func
 
 from app import login_required, db
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, request
 from flask.ext.login import current_user
 
 from app.modules.common.models import Student, Contract, GradeEvaluation, Course, Evaluation, StudyGroup, Semigroup, \
@@ -18,6 +19,20 @@ def home():
             "role": current_user.role,
             }
     return render_template('student/welcome.html', data=data)
+
+
+@student.route('/settings/', methods=['GET', 'POST'])
+@login_required(1)
+def settings():
+    data = {"username": current_user.username,
+            "email": current_user.email,
+            "role": current_user.role,
+            }
+
+    template = 'student/settings.html'
+    route = 'student.settings'
+
+    return passchange(data, request, template, route)
 
 
 @student.route('/grades/temporary/', methods=['GET', 'POST'])
