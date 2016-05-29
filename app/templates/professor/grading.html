@@ -70,7 +70,7 @@
                                                                    onclick="save_changes({{ data.selected_course.id }})">Save</a>
         <div class="panel-group" id="accordion">
             <div class="panel panel-default">
-                {% for k, v in data.students_dict.items() %}
+                {% for k, v in (data.students_dict|dictsort(true)) %}
                     <div class="panel-heading">
                         <h4 class="panel-title">
                             <table id="table_{{ k }}" class="table">
