@@ -291,8 +291,6 @@ class ProposedCourses(db.Model):
         self.description = description
 
 
-
-
 class AdminDates(db.Model):
     __tablename__ = 'admin_dates'
 

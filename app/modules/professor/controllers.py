@@ -2,7 +2,7 @@ from app import db
 from app import login_required
 from app.modules.common.controllers import passchange
 from app.modules.common.forms import PasswdChangeForm
-from app.modules.common.models import Course, GradeEvaluation, Student
+from app.modules.common.models import Course, GradeEvaluation, Student, AdminDates
 from app.modules.common.models import Professor, ProposedCourses
 from app.modules.professor.forms import ProposalForm
 from config import SQLALCHEMY_DATABASE_URI
@@ -40,6 +40,7 @@ def home():
 
 
 @professor_blueprint.route('/settings/', methods=['GET', 'POST'])
+@login_required(2)
 def settings():
     professor = Professor.query.filter_by(id_user=current_user.get_id()).first()
     courses = __get_professor_courses(professor)
@@ -123,18 +124,24 @@ def get_students_for_course(course_id):
                 contract = evaluation.contract
                 student = contract.student
                 group = student.semigroup.study_group
-                grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in
-                               evaluation.grades])
+                grades = list([{"grade": grade.grade, "date": grade.evaluation_date if grade.evaluation_date else datetime.min.date(), "id": grade.id} for indx, grade in
+                               enumerate(evaluation.grades)])
                 final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0)["grade"] if grades else 0
                 students.append({"student": student, "contract": contract.id, "group": group.group_number,  "grades": grades, "final_grade": final_grade})
     for student in students:
         students_dict[student["group"]].append(student)
+    session_dates = __get_session_date()
+    retake_dates = __get_retake_date()
     data = {"username": current_user.username,
             "role": current_user.role,
             "email": current_user.email,
             "courses": courses,
             "rank_prof": current_proffesor.rank,
             "ranks": ranks,
+            "min_date": datetime.min.date(),
+            "date_now": datetime.now().date(),
+            "session_dates": session_dates,
+            "retake_dates": retake_dates,
             "selected_course": selected_course,
             "students_dict": students_dict}
 
@@ -171,12 +178,22 @@ def save():
     return url_for('professor.get_students_for_course', course_id=course_id)
 
 
+def __get_session_date():
+    admin_date = AdminDates.query.filter_by(id=1).first()
+    return admin_date.from_date, admin_date.to
+
+
+def __get_retake_date():
+    admin_date = AdminDates.query.filter_by(id=2).first()
+    return admin_date.from_date, admin_date.to
+
+
 def __save_grade(grade_id, value, date):
-    if date:
-        c_date = datetime.strptime(date, '%d/%m/%Y').date()
+    if date is not " " and date is not None and date is not "":
+        c_date = datetime.strptime(date + " 00:00", '%d/%m/%Y %H:%M').date()
         GradeEvaluation.query.filter_by(id=grade_id).update(dict(evaluation_date=c_date))
         db.session.commit()
-    if value is not "" and value is None and value is not "absent":
+    if value is not "" and value is not None and not value == "absent":
         GradeEvaluation.query.filter_by(id=grade_id).update(dict(grade=int(value)))
         db.session.commit()
 

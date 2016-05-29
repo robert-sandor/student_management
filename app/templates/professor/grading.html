@@ -4,7 +4,7 @@
 
 {% block page_title %}Professor frontpage{% endblock %}
 
-{% block settings %} <a href="{{ url_for('professor_cod.settings') }}">Settings</a> {% endblock %}
+{% block settings %} <a href="{{ url_for("professor.settings") }}">Settings</a> {% endblock %}
 
 {% block head %}
     {{ super() }}
@@ -18,7 +18,7 @@
                 var dates = [];
                 if (s_group != "") {
                     $("h4.panel-title table tr > th." + s_group + " input").each(function (index, value) {
-                        dates.push({grade: [index, $(value).datepicker({ dateFormat: 'dd/mm/yyyy' }).val()]});
+                        dates.push({grade: [index, $(value).datepicker({dateFormat: 'dd/mm/yyyy'}).val()]});
                     });
                     group_dates.push({group: s_group, dates: dates})
                 }
@@ -66,8 +66,9 @@
     {{ super() }}
 
     <div class="container">
-        <h2>{{ data.selected_course.course_name }} grading</h2> <a class="btn btn-default" role="button"
-                                                                   onclick="save_changes({{ data.selected_course.id }})">Save</a>
+        <h2>{{ data.selected_course.course_name }} grading</h2>
+        <h4>{{ data.selected_course.course_description }}</h4>
+        <a class="btn btn-default" role="button" onclick="save_changes({{ data.selected_course.id }})">Save</a>
         <div class="panel-group" id="accordion">
             <div class="panel panel-default">
                 {% for k, v in (data.students_dict|dictsort(true)) %}
@@ -82,9 +83,18 @@
                                         </a>
                                     </th>
                                     {% set my_dates = v[0].grades|sort(attribute='date') %}
-                                    <th class="{{ k }}">First date: <input id="defaultPopup_{{ k }}_1" size="10" class="getdate" value="{{ my_dates[0].date.strftime('%d/%m/%Y')}}"></th>
-                                    <th class="{{ k }}">Second date: <input id="defaultPopup_{{ k }}_2" size="10" class="getdate" value="{{ my_dates[1].date.strftime('%d/%m/%Y')}}"></th>
-                                    <th class="{{ k }}">Retake: <input id="defaultPopup_{{ k }}_3" size="10" class="getdate" value="{{ my_dates[2].date.strftime('%d/%m/%Y')}}"></th>
+                                    <th class="{{ k }}">First date: <input id="defaultPopup_{{ k }}_1" size="10"
+                                                                           class="getdate"
+                                                                           value="{{ my_dates[0].date.strftime('%d/%m/%Y') if my_dates[0].date > data.min_date }} " {{ "disabled" if my_dates[0].date > data.min_date }}>
+                                    </th>
+                                    <th class="{{ k }}">Second date: <input id="defaultPopup_{{ k }}_2" size="10"
+                                                                            class="getdate"
+                                                                            value="{{ my_dates[1].date.strftime('%d/%m/%Y') if my_dates[1].date > data.min_date }} " {{ "disabled" if my_dates[1].date > data.min_date }}>
+                                    </th>
+                                    <th class="{{ k }}">Retake: <input id="defaultPopup_{{ k }}_3" size="10"
+                                                                       class="getdate"
+                                                                       value="{{ my_dates[2].date.strftime('%d/%m/%Y') if my_dates[2].date > data.min_date }} " {{ "disabled" if my_dates[2].date > data.min_date }}>
+                                    </th>
                                 </tr>
                             </table>
                         </h4>
@@ -96,7 +106,7 @@
                                     <th>First name</th>
                                     <th>Last name</th>
                                     {% for grade in v[0].grades|sort(attribute='date') %}
-                                        <th>{{ grade.date.strftime('%d/%m/%Y')}}</th>
+                                        <th>{{ grade.date.strftime('%d/%m/%Y') if grade.date > data.min_date else "Grade " + loop.index|string }}</th>
                                     {% endfor %}
                                     <th>Final grade</th>
 
@@ -105,16 +115,32 @@
                                     <tr id="student_{{ student_dict.student.id }}" class="student">
                                         <td>{{ student_dict.student.first_name }}</td>
                                         <td>{{ student_dict.student.last_name }}</td>
-                                        {% for grade in student_dict.grades|sort(attribute='date') %}
-                                            <td>
-                                                <label>
-                                                    <input id="{{ grade.id }}" class="grade_{{ loop.index }}"
-                                                           type="text" name="grade {{ loop.index }}"
-                                                           value={{ grade.grade if grade.grade else "absent" }}>
+                                        {% set m_grades = student_dict.grades|sort(attribute='date') %}
+                                        <td>
+                                            <label>
+                                                <input id="{{ m_grades[0].id }}" class="grade_{{ 1 }}"
+                                                       type="text" name="grade {{ 1 }}"
+                                                       value={{ m_grades[0].grade if m_grades[0].grade else "absent" }}
+                                                               {{ "disabled" if m_grades[1].grade or not (data.date_now > data.session_dates[0] and data.date_now < data.session_dates[1]) }}>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
 
-                                                </label>
-                                            </td>
-                                        {% endfor %}
+                                                <input id="{{ m_grades[1].id }}" class="grade_{{ 2 }}"
+                                                       type="text" name="grade {{ 2 }}"
+                                                       value={{ m_grades[1].grade if m_grades[1].grade else "absent" }}
+                                                               {{ "disabled" if m_grades[0].grade or not (data.date_now > data.session_dates[0] and data.date_now < data.session_dates[1]) }}>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+
+                                                <input id="{{ m_grades[2].id }}" class="grade_{{ 3 }}"
+                                                       type="text" name="grade {{ 3 }}"
+                                                       value={{ m_grades[2].grade if m_grades[2].grade else "absent" }}  {{ "disabled" if not (data.date_now > data.retake_dates[0] and data.date_now < data.retake_dates[1]) }}>
+                                            </label>
+                                        </td>
                                         <td>{{ student_dict.final_grade if student_dict.final_grade else 0 }}</td>
                                     </tr>
                                 {% endfor %}
