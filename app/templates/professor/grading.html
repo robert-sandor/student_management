@@ -53,13 +53,23 @@
                     {% for k, v in data.students_dict.items() %}
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ k }}">
+                                <table class="table">
+                                    <tr>
+                                        <td>
+                                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ k }}">
                                     <span class="glyphicon glyphicon-folder-close"></span>
-                                    {{ k }} <input id="defaultPopup" size="10" class="is-datepick">
-                                </a>
+                                        {{ k }}
+                                    </a>
+                                    </td>
+
+                                    <td class="{{ k }}">First date: <input id="defaultPopup" size="10" class="getdate"></td>
+                                    <td class="{{ k }}">Second date: <input id="defaultPopup" size="10" class="getdate"></td>
+                                    <td class="{{ k }}">Retake: <input id="defaultPopup" size="10" class="getdate"></td>
+                                </tr>
+                                    </table>
                             </h4>
                         </div>
-                        <div id="collapse_{{ k }}" class="panel-collapse collapse in">
+                        <div id="collapse_{{ k }}" class="panel-collapse collapse">
                             <div class="panel-body">
                                 <table class="table">
                                     <tr>
