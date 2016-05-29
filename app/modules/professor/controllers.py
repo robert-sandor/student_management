@@ -1,5 +1,7 @@
 from app import db
 from app import login_required
+from app.modules.common.controllers import passchange
+from app.modules.common.forms import PasswdChangeForm
 from app.modules.common.models import Course, GradeEvaluation, Student
 from app.modules.common.models import Professor, ProposedCourses
 from app.modules.professor.forms import ProposalForm
@@ -35,6 +37,25 @@ def home():
             "rank_prof": professor.rank,
             "ranks": ranks}
     return render_template("professor/professor.html", data=data)
+
+
+@professor_blueprint.route('/settings/', methods=['GET', 'POST'])
+def settings():
+    professor = Professor.query.filter_by(id_user=current_user.get_id()).first()
+    courses = __get_professor_courses(professor)
+
+    data = {"username": current_user.username,
+            "role": current_user.role,
+            "email": current_user.email,
+            "selected_course": None,
+            "courses": courses,
+            "rank_prof": professor.rank,
+            "ranks": ranks}
+
+    template = 'professor/settings.html'
+    route = 'professor.settings'
+
+    return passchange(data, request, template, route)
 
 
 @professor_blueprint.route('/proposals/add_proposal/', methods=['GET', 'POST'])
