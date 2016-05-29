@@ -18,8 +18,14 @@ def home():
 @professor_cod.route('/proposals/')
 @login_required(3)
 def proposals():
-    data = {"username": current_user.username, "role": current_user.role, "email": current_user.email,
-            "proposals": ProposedCourses.query.all(), "packages": Package.query.all(), "profs": Professor.query.all()}
+    data = {"username": current_user.username,
+            "role": current_user.role,
+            "email": current_user.email,
+            "proposals": ProposedCourses.query.all(),
+            "packages": Package.query.all(),
+            "profs": Professor.query.all(),
+            "semesters": Semester.query.all(),
+            }
     return render_template("professor_cod/proposals.html", data=data)
 
 
@@ -29,9 +35,6 @@ def save():
     for course in request.json.keys():
         # Get the corresponding course
         proposed_course = ProposedCourses.query.filter_by(id=int(course)).first()
-        # Get the latest semester
-        last_semester = Semester.query.order_by('id').first()
-
         # Creating course, main entry in Courses table
         # Course name and description setting
         course_name = proposed_course.course_name
@@ -40,13 +43,14 @@ def save():
         # Generating some type of course code, todo: maybe better implementation?
         course_code = str(proposed_course.speciality[0]).upper() + str(proposed_course.speciality[0]).upper() + str(
                           randint(1000, 9999))
-        # Get data about package and professor
+        # Get data about professor and semester
         collected_data = request.json[course]
         p = Professor.query.filter_by(id=collected_data['prof']).first()
-        # For credits set a default of 6, todo: set it directly on the column as default?
-        course_credits = 6
-        # For eval type set a default of C, todo: default on column
-        eval_type = 'C'
+        last_semester = Semester.query.filter_by(id=collected_data['sem']).first()
+        # For credits set a default of 6
+        course_credits = int(collected_data['credits'])
+        # For eval type set a default of C
+        eval_type = collected_data['eval']
         # Create course from give data
         # Settings name as username, seeing as we don't have an ACTUAL name on the prof
         highest_id = db.session.query(Course).order_by(Course.id.desc()).first().id + 1

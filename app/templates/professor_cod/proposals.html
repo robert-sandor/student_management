@@ -29,18 +29,42 @@
             var all = {};
             var i;
             for (i = 0, len = selected.length; i < len; i++) {
+                // Get id of the package
                 var val = $(".package" + selected[i].replace(/[A-Za-z$-]/g, "")
                                 .toString()).children("option")
                         .filter(":selected").prop('className');
+                // Get id of the professor
                 var val1 = $(".prof" + selected[i].replace(/[A-Za-z$-]/g, "")
                                 .toString()).children("option")
                         .filter(":selected").prop('className');
+                // Get id of the professor
+                var val4 = $(".sem" + selected[i].replace(/[A-Za-z$-]/g, "")
+                                .toString()).children("option")
+                                .filter(":selected").prop('className');
+                // Getting the number of credits, warning if it's wrong
+                var pattern = new RegExp("^[0-9]+$");
+                var credits = $('.credits').val();
+                // Testing credits against regexp
+                if (! pattern.test(credits)) {
+                    alert("Credits are not right!");
+                    return;
+                } else {
+                    var val2 = parseInt(credits.replace(/[A-Za-z$-]/g, ""));
+                }
+                // Getting the evaluation type
+                 var val3 = $(".eval_type" + selected[i].replace(/[A-Za-z$-]/g, "")
+                                .toString()).children("option").filter(":selected").text();
                 val = parseInt(val.replace(/[A-Za-z$-]/g, ""));
                 val1 = parseInt(val1.replace(/[A-Za-z$-]/g, ""));
+                val4 = parseInt(val4.replace(/[A-Za-z$-]/g, ""));
+
                 var sel = selected[i].replace(/[A-Za-z$-]/g, "");
                 all[sel] = {};
                 all[sel]['package'] = val;
                 all[sel]['prof'] = val1;
+                all[sel]['credits'] = val2;
+                all[sel]['eval'] = val3;
+                all[sel]['sem'] = val4;
             }
             var json = JSON.stringify(all, null, '\t');
             console.log(json);
@@ -75,17 +99,42 @@
                     <h4 class="panel-title">
                         <div class="row">
                             <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ item.id }}">
-                                <div class="col-md-7 pagination-centered">{{ item.course_name }}</div>
+                                <div class="col-md-3 pagination-centered">{{ item.course_name }}</div>
                             </a>
 
-                            <div class="pkg-opt col-md-5">
-                                <div class="col-md-4 pagination-centered">
+                            <div class="pkg-opt col-md-9">
+                                <div class="col-md-2 pagination-centered pull-right"
+                                     style="padding-top: 1.5em;">
                                     <div class="checkbox{{ item.id }}">
                                         <label><input type="checkbox" name="checkbox"> Accept?</label>
                                     </div>
                                 </div>
-                                <div class="col-md-4 pagination-centered pull-right">
-                                    <label>
+                                <div class="col-md-2 pagination-centered pull-right">
+                                    <label> Semester:
+                                        <select class="sem{{ item.id }}">
+                                            {% for sem in data.semesters %}
+                                                <option class="sem{{ sem.id }}">Year {{ sem.year_id }}, Sem {{ sem.semester }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="col-md-2 pagination-centered pull-right">
+                                    <label> Evaluation:<br>
+                                        <select class="eval_type{{ item.id }}">
+                                                <option>S</option>
+                                                <option>S+P</option>
+                                                <option selected>VP</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="col-md-2 pagination-centered pull-right">
+                                    <label> Credits:
+                                        <input title="Number of credits" type="text" name="credits"
+                                               maxlength="2" size="4" class="credits">
+                                    </label>
+                                </div>
+                                <div class="col-md-2 pagination-centered pull-right">
+                                    <label> Professor:
                                         <select class="prof{{ item.id }}">
                                             {% for prof in data.profs %}
                                                 <option class="prof{{ prof.id }}">{{ prof.auth_user.username }}</option>
@@ -93,8 +142,8 @@
                                         </select>
                                     </label>
                                 </div>
-                                <div class="col-md-4 pagination-centered pull-right">
-                                    <label>
+                                <div class="col-md-2 pagination-centered pull-right">
+                                    <label> Package:
                                         <select class="package{{ item.id }}">
                                             {% for pckg in data.packages %}
                                                 <option class="pckg{{ pckg.id }}">{{ pckg.name }}</option>
