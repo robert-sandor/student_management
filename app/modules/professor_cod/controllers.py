@@ -1,6 +1,7 @@
 from app import login_required, db
 from app.modules.common.models import OptionalCourse, Course, Package, Professor, GradeEvaluation, ProposedCourses, \
-    Semester
+    Semester, ProfessorRole
+from app.modules.common.controllers import passchange
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for
 from flask_login import current_user
 from random import random, randint
@@ -55,12 +56,12 @@ def save():
         collected_data = request.json[course]
         p = Professor.query.filter_by(id=collected_data['prof']).first()
         last_semester = Semester.query.filter_by(id=collected_data['sem']).first()
-        # For credits set a default of 6
+        # Set credits
         course_credits = int(collected_data['credits'])
-        # For eval type set a default of C
+        # Set eval type
         eval_type = collected_data['eval']
         # Create course from give data
-        # Settings name as username, seeing as we don't have an ACTUAL name on the prof
+        # Settings name as username, seeing as we don't have an ACTUAL name on the prof yet
         highest_id = db.session.query(Course).order_by(Course.id.desc()).first().id + 1
         c = Course(id=highest_id, course_name=course_name, course_description=course_description,
                    code=course_code, professor_name=p.auth_user.username, credits=course_credits,
@@ -80,6 +81,9 @@ def save():
                             package_id=package, course_language=language)
 
         db.session.add(oc)
+        # Correlate professor with created course
+        pc = ProfessorRole(professor_id=p.id, course_id=c.id, role_type_id=1)
+        db.session.add(pc)
         db.session.commit()
     return url_for('professor_cod.home')
 

@@ -44,15 +44,10 @@
                                 .toString()).children("option")
                                 .filter(":selected").prop('className');
                 // Getting the number of credits, warning if it's wrong
-                var pattern = new RegExp("^[0-9]+$");
                 var credits = $('.credits').val();
-                // Testing credits against regexp
-                if (! pattern.test(credits)) {
-                    alert("Credits are not right!");
-                    return;
-                } else {
-                    var val2 = parseInt(credits.replace(/[A-Za-z$-]/g, ""));
-                }
+                var val2 = parseInt(credits);
+                // Testing credits
+                if (isNaN(val2)) { alert("Credits are not right!"); }
                 // Getting the evaluation type
                  var val3 = $(".eval_type" + selected[i].replace(/[A-Za-z$-]/g, "")
                                 .toString()).children("option").filter(":selected").text();
