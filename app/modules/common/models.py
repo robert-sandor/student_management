@@ -57,7 +57,7 @@ class Semigroup(db.Model):
     semigroup_id = Column(ForeignKey('study_group.id'), nullable=False)
     semigroup_number = Column(String(5))
 
-    semigroup = relationship('StudyGroup')
+    study_group = relationship('StudyGroup')
 
 
 class Student(db.Model):
@@ -83,6 +83,7 @@ class StudyGroup(db.Model):
     group_number = Column(String(10))
 
     semester = relationship('Semester')
+    semigroup = relationship('Semigroup')
 
 
 class Vote(db.Model):
@@ -180,6 +181,7 @@ class Semester(db.Model):
     semester = Column(Integer, nullable=False)
 
     year = relationship('Year')
+    study_group = relationship('StudyGroup')
 
 
 class Specialty(db.Model):
@@ -233,6 +235,7 @@ class Year(db.Model):
     current_capacity = Column(Integer, nullable=False, server_default=text("0"))
 
     study_plan = relationship('StudyPlan')
+    semester = relationship('Semester')
 
 
 class Professor(db.Model):
