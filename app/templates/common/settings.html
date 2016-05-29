@@ -1,0 +1,86 @@
+{% extends "common/base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block page_title %}Settings{% endblock %}
+
+{% block head %} {{ super() }} {% endblock %}
+
+{% block username %}{{ data.username }}{% endblock %}
+
+{% block navigation %} {{ super() }} {% endblock %}
+
+{% block content %}
+
+    {{ super() }}
+
+    <div class="container">
+
+        <form action="{{ url_for(route) }}" method="post">
+
+            {{ form.hidden_tag() }}
+
+            <h3>Change password</h3>
+
+            {#flash error messages#}
+
+            {% with messages = get_flashed_messages() %}
+
+                {% if messages %}
+
+                    <div class="alert alert-danger">
+
+                        {% for message in messages %}
+
+                            <strong>Error : </strong>{{ message }}
+
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            {% endwith %}
+
+            {# old password field #}
+            <div class="form-group">
+
+                {{ form.old_password(class="form-control", placeholder="Old Password") }}
+
+            </div>
+
+            {# new password field #}
+            <div class="form-group">
+
+                {{ form.new_password(class="form-control", placeholder="New Password") }}
+
+            </div>
+
+            {# repeat password field #}
+            <div class="form-group">
+
+                {{ form.repeat_password(class="form-control", placeholder="Repeat Password") }}
+
+            </div>
+
+            {% if info %}
+
+                <div class="alert alert-success">
+
+                    <strong>Success : </strong>{{ info }}
+
+                </div>
+
+            {% endif %}
+
+            <div class="form-group">
+
+                <button class="btn btn-primary btn-lg" type="submit">Change Password</button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+{% endblock %}
