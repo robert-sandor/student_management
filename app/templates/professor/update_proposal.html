@@ -1,0 +1,109 @@
+{% extends "common/base.html" %}
+
+{% block title %}Proposals{% endblock %}
+
+{% block page_title %}Proposals{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+
+    {% macro render_field(field, placeholder=None) %}
+        {% if field.errors %}
+        {% elif field.flags.error %}
+        {% else %}
+        {% endif %}
+        {% set css_class = 'form-control' + kwargs.pop('class', '') %}
+        {% set text = text %}
+        {{ field(class=css_class, placeholder=placeholder, required=True,text=text, **kwargs) }}
+    {% endmacro %}
+
+    <p class="text-right">
+        You have submitted {{ data.no_proposals }} proposals currently. You have {{ data.max_proposals - data.no_proposals }} available.
+    </p>
+    <h3>  Update proposal</h3>
+    <hr>
+    <div class="container-fluid">
+    <form class="form-horizontal" method="POST" action="." accept-charset="UTF-8" role="form">
+  {% with errors = get_flashed_messages(category_filter=["error"]) %}
+            {% if errors %}
+                <div>
+                    {% for error in errors %}
+                        {{ error }}<br>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if form.errors %}
+            <div class="error">
+                {% for field, error in form.errors.items() %}
+                    {% for e in error %}
+                        {{ e }}<br>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+        {{ form.csrf_token }}
+            <div class="form-group"><label for="course_name">Course name</label>
+
+
+
+
+        <input autofocus="" class="form-control" id="coursenameinput" name="course_name" placeholder="Course name" required text="" type="text" value="{{ data.proposal.course_name }}">
+    </div>
+            <div class="form-group"><label for="speciality">Speciality</label>
+
+
+
+
+        <input class="form-control" id="specialityinput" name="speciality" placeholder="Speciality" required text="" type="text" value="{{ data.proposal.speciality }}">
+    </div>
+            <div class="form-group"><label for="study_line">Study line</label>
+
+
+
+
+        <input class="form-control" id="studylineinput" name="study_line" placeholder="Study line" required text="" type="text" value="{{ data.proposal.study_line }}">
+    </div>
+            <div class="form-group"><label for="description">Description</label>
+
+
+
+
+        <textarea class="form-control" id="descriptioninput" name="description" placeholder="Description" required rows="10" text="">{{ data.proposal.description }}</textarea>
+    </div>
+
+    <br>
+    <p class="text-right">
+            <button class="btn btn-default" type="submit" name="submit">Update</button>
+            <button class="btn btn-default">View</button>
+    </p>
+    </form>
+    </div>
+
+
+{% endblock %}
+
+{% block username %}{{data.username}}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li>
+        <a href="javascript:" data-toggle="collapse" data-target="#demo">Proposals</a>
+	    <ul id="demo" class="collapse">
+            <li>
+    			<a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
+            </li>
+            <li>
+    			<a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
+            </li>
+    	</ul>
+    </li>
+    <li>
+        <a href="#">Grading</a>
+    </li>
+{% endblock %}

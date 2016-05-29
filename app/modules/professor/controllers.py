@@ -1,13 +1,10 @@
-from app import db
-from app import login_required
+from app import login_required, db
 from app.modules.common.controllers import passchange
 from app.modules.common.forms import PasswdChangeForm
-from app.modules.common.models import Course, GradeEvaluation
-from app.modules.common.models import Professor, ProposedCourses
+from app.modules.common.models import Course, GradeEvaluation, Professor, ProposedCourses
 from app.modules.professor.forms import ProposalForm
 from config import SQLALCHEMY_DATABASE_URI
-from flask import Blueprint, render_template, request
-from flask import url_for
+from flask import Blueprint, render_template, request, url_for, redirect
 from flask_login import current_user
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -38,6 +35,7 @@ def home():
 
 
 @professor_blueprint.route('/settings/', methods=['GET', 'POST'])
+@login_required(2)
 def settings():
     professor = Professor.query.filter_by(id_user=current_user.get_id()).first()
     courses = __get_professor_courses(professor)
@@ -79,11 +77,8 @@ def add_proposal():
         form.study_line.data = ""
         form.description.data = ""
 
-        some_engine = create_engine(SQLALCHEMY_DATABASE_URI)
-        Session = sessionmaker(bind=some_engine)
-        session = Session()
-        session.add(proposal)
-        session.commit()
+        db.session.add(proposal)
+        db.session.commit()
 
     return render_template("professor/add_proposal.html", data=data, form=form)
 
@@ -155,6 +150,63 @@ def save():
         __save_grade(grade_3_id, grade_3_value)
 
     return url_for('professor.get_students_for_course', course_id=course_id)
+
+@professor_blueprint.route('/proposals/update_proposal/', methods=['GET', 'POST'])
+@professor_blueprint.route('/proposals/update_proposal/<proposal_id>/', methods=['GET', 'POST'])
+@login_required(2)
+def update_proposal(proposal_id=None):
+    if proposal_id is None:
+        return redirect(url_for('404'))
+    prof = Professor.query.filter_by(id_user=current_user.id).first()
+    proposed_courses = ProposedCourses.query.filter_by(professor_id=prof.id).all()
+    proposed_course = ProposedCourses.query.filter_by(id=proposal_id).first()
+    form = ProposalForm(request.form)
+    ranks = {"doctorand": 0,
+             "asistent": 1,
+             "conferentiar": 2,
+             "lector": 3,
+             "prof": 4}
+
+    data = {"username": current_user.username,
+            "role": current_user.role,
+            "email": current_user.email,
+            "rank_prof": prof.rank,
+            "ranks": ranks,
+            "no_proposals": proposed_courses.__len__(),
+            "max_proposals": 2,
+            "proposal": proposed_course}
+
+    if form.validate_on_submit():
+        proposal = ProposedCourses(prof.id, form.course_name.data, form.speciality.data, form.study_line.data,
+                                   form.description.data)
+        form.course_name.data = ""
+        form.speciality.data = ""
+        form.study_line.data = ""
+        form.description.data = ""
+
+        pc = db.session.query(ProposedCourses).get(proposal_id)
+
+        pc.course_name = proposal.course_name
+        pc.speciality = proposal.speciality
+        pc.study_line = proposal.study_line
+        pc.description = proposal.description
+
+        db.session.commit()
+        return redirect(url_for("professor.view_proposals"))
+    return render_template("professor/update_proposal.html", data=data, form=form)
+
+
+@professor_blueprint.route('/proposals/delete_proposal/')
+@professor_blueprint.route('/proposals/delete_proposal/<proposal_id>')
+@login_required(2)
+def delete_proposal(proposal_id=None):
+    if proposal_id is None:
+        return redirect(url_for('404'))
+
+    proposed_course = ProposedCourses.query.filter_by(id=proposal_id).first()
+    db.session.delete(proposed_course)
+    db.session.commit()
+    return redirect(url_for("professor.view_proposals"))
 
 
 def __save_grade(grade_id, value):

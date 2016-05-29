@@ -12,21 +12,59 @@
 
 {% block content %}
     {{ super() }}
-    <br>
+    <br xmlns="http://www.w3.org/1999/html">
     <h3>Submitted proposals</h3><hr>
     <div class="container-fluid">
+        <ul class="nav navbar-right nav-pills" role="tablist">
+            {% for proposal in data.proposals %}
+                {% if loop.first %}
+                    <li role="presentation" class="active">
+                        <a href="#tab_nr{{ loop.index }}" aria-controls="tab_nr{{ loop.index }}" role="tab" data-toggle="tab">First</a>
+                    </li>
+                {% else %}
+                    <li role="presentation">
+                        <a href="#tab_nr{{ loop.index }}" aria-controls="tab_nr{{ loop.index }}" role="tab" data-toggle="tab">Second</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        <div class="tab-content">
         {% for proposal in data.proposals %}
-            <div class="jumbotron">
-                <p>Course name: {{ proposal.course_name }}</p>
-                <p>Speciality:  {{ proposal.speciality }}</p>
-                <p>Study line:  {{ proposal.study_line }}</p>
-                <p>Description: {{ proposal.description }}</p>
-                <p class="text-right">
-                    <button class="btn btn-default btn-lg">Modify</button>
-                    <button class="btn btn-default btn-lg">Delete</button>
-                </p>
-            </div>
+            {% if loop.first %}
+                <div role="tabpanel" class="tab-pane fade in active" id="tab_nr{{ loop.index }}">
+                    <p>Course name: {{ proposal.course_name }}</p>
+                    <p>Speciality:  {{ proposal.speciality }}</p>
+                    <p>Study line:  {{ proposal.study_line }}</p>
+                    <p>Description: {{ proposal.description }}</p>
+                    <br><br>
+                    <p class="text-left">
+                        <button class="btn btn-default btn-lg">
+                            <a href="{{ url_for('professor.update_proposal', proposal_id=proposal.id) }}"> Modify</a>
+                        </button>
+                        <button class="btn btn-default btn-lg">
+                            <a href="{{ url_for('professor.delete_proposal', proposal_id=proposal.id) }}"> Delete</a>
+                        </button>
+                    </p>
+                </div>
+            {% else %}
+                <div role="tabpanel" class="tab-pane fade" id="tab_nr{{ loop.index }}">
+                    <p>Course name: {{ proposal.course_name }}</p>
+                    <p>Speciality:  {{ proposal.speciality }}</p>
+                    <p>Study line:  {{ proposal.study_line }}</p>
+                    <p>Description: {{ proposal.description }}</p>
+                    <br><br>
+                    <p class="text-left">
+                        <button class="btn btn-default btn-lg">
+                            <a href="{{ url_for('professor.update_proposal', proposal_id=proposal.id) }}"> Modify</a>
+                        </button>
+                        <button class="btn btn-default btn-lg">
+                        <a href="{{ url_for('professor.delete_proposal', proposal_id=proposal.id) }}"> Delete</a>
+                            </button>
+                    </p>
+                </div>
+            {% endif %}
         {% endfor %}
+        </div>
     </div>
 {% endblock %}
 
