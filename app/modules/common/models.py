@@ -1,7 +1,6 @@
 # coding: utf-8
 from sqlalchemy import Boolean, Column, Date, ForeignKey, ForeignKeyConstraint, Integer, SmallInteger, String, text
 from sqlalchemy.orm import relationship
-
 from app import db
 
 
@@ -291,5 +290,15 @@ class ProposedCourses(db.Model):
         self.study_line = study_line
         self.description = description
 
+
+
+
+class AdminDates(db.Model):
+    __tablename__ = 'admin_dates'
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    type = Column(Integer, nullable=False)
+    from_date = Column(Date, nullable=False)
+    to = Column(Date, nullable=False)
 
 
