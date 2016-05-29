@@ -137,7 +137,7 @@
                                     <label> Professor:
                                         <select class="prof{{ item.id }}">
                                             {% for prof in data.profs %}
-                                                <option class="prof{{ prof.id }}">{{ prof.auth_user.username }}</option>
+                                                <option class="prof{{ prof.id }}">{{ prof.name }}</option>
                                             {% endfor %}
                                         </select>
                                     </label>
