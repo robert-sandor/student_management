@@ -99,12 +99,12 @@
                     <h4 class="panel-title">
                         <div class="row">
                             <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{ item.id }}">
-                                <div class="col-md-3 pagination-centered">{{ item.course_name }}</div>
+                                <div class="col-md-2 pagination-centered">{{ item.course_name }}</div>
                             </a>
 
-                            <div class="pkg-opt col-md-9">
-                                <div class="col-md-2 pagination-centered pull-right"
-                                     style="padding-top: 1.5em;">
+                            <div class="pkg-opt col-md-10">
+                                <div class="col-md-3 pagination-centered pull-right"
+                                     style="padding-top: 1.5em; padding-left: 14%;">
                                     <div class="checkbox{{ item.id }}">
                                         <label><input type="checkbox" name="checkbox"> Accept?</label>
                                     </div>
@@ -118,7 +118,8 @@
                                         </select>
                                     </label>
                                 </div>
-                                <div class="col-md-2 pagination-centered pull-right">
+                                <div class="col-md-2 pagination-centered pull-right"
+                                     style="padding-left: 6%;">
                                     <label> Evaluation:<br>
                                         <select class="eval_type{{ item.id }}">
                                                 <option>S</option>
@@ -127,7 +128,7 @@
                                         </select>
                                     </label>
                                 </div>
-                                <div class="col-md-2 pagination-centered pull-right">
+                                <div class="col-md-1 pagination-centered pull-right">
                                     <label> Credits:
                                         <input title="Number of credits" type="text" name="credits"
                                                maxlength="2" size="4" class="credits">
@@ -142,7 +143,8 @@
                                         </select>
                                     </label>
                                 </div>
-                                <div class="col-md-2 pagination-centered pull-right">
+                                <div class="col-md-2 pagination-centered pull-right"
+                                     style="padding-left: 6%;">
                                     <label> Package:
                                         <select class="package{{ item.id }}">
                                             {% for pckg in data.packages %}
