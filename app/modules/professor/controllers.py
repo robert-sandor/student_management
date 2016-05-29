@@ -1,6 +1,6 @@
 from app import db
 from app import login_required
-from app.modules.common.models import Course, GradeEvaluation
+from app.modules.common.models import Course, GradeEvaluation, Student
 from app.modules.common.models import Professor, ProposedCourses
 from app.modules.professor.forms import ProposalForm
 from config import SQLALCHEMY_DATABASE_URI
@@ -10,6 +10,7 @@ from flask_login import current_user
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from collections import defaultdict
+from datetime import datetime
 
 professor_blueprint = Blueprint('professor', __name__, url_prefix='/prof')
 
@@ -98,15 +99,15 @@ def get_students_for_course(course_id):
         if course.id == int(float(course_id)):
             selected_course = course
             for evaluation in course.evaluation:
-                student = evaluation.contract.student
+                contract = evaluation.contract
+                student = contract.student
                 group = student.semigroup.study_group
                 grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in
                                evaluation.grades])
                 final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0)["grade"] if grades else 0
-                students.append({"student": student, "group": group.group_number,  "grades": grades, "final_grade": final_grade})
+                students.append({"student": student, "contract": contract.id, "group": group.group_number,  "grades": grades, "final_grade": final_grade})
     for student in students:
         students_dict[student["group"]].append(student)
-    print(students_dict)
     data = {"username": current_user.username,
             "role": current_user.role,
             "email": current_user.email,
@@ -122,25 +123,39 @@ def get_students_for_course(course_id):
 @professor_blueprint.route('/professor/grading/', methods=['POST'])
 @login_required(2)
 def save():
-    print(request.json)
     course_id = 1
-    for element in request.json:
+    group_dates = request.json["group_dates"]
+    group_dates_dict = {}
+    for pair in group_dates:
+        group = int(pair["group"])
+        dates = pair["dates"]
+        dates_dict = {}
+        for elem in dates:
+            dates_dict[elem["grade"][0]] = elem["grade"][1]
+        group_dates_dict[group] = dates_dict
+    for element in request.json["students"]:
         course_id = element["course_id"]
+        student_id = element["student_id"]
+        group_number = int(__get_student_group(student_id))
         grade_1_id = int(element["grade_1"]["id"])
         grade_1_value = element["grade_1"]["value"]
         grade_2_id = int(element["grade_2"]["id"])
         grade_2_value = element["grade_2"]["value"]
         grade_3_id = int(element["grade_3"]["id"])
         grade_3_value = element["grade_3"]["value"]
-        __save_grade(grade_1_id, grade_1_value)
-        __save_grade(grade_2_id, grade_2_value)
-        __save_grade(grade_3_id, grade_3_value)
+        __save_grade(grade_1_id, grade_1_value, group_dates_dict[group_number][0])
+        __save_grade(grade_2_id, grade_2_value, group_dates_dict[group_number][1])
+        __save_grade(grade_3_id, grade_3_value, group_dates_dict[group_number][2])
 
     return url_for('professor.get_students_for_course', course_id=course_id)
 
 
-def __save_grade(grade_id, value):
-    if value is not "" or value is None:
+def __save_grade(grade_id, value, date):
+    if date:
+        c_date = datetime.strptime(date, '%d/%m/%Y').date()
+        GradeEvaluation.query.filter_by(id=grade_id).update(dict(evaluation_date=c_date))
+        db.session.commit()
+    if value is not "" and value is None and value is not "absent":
         GradeEvaluation.query.filter_by(id=grade_id).update(dict(grade=int(value)))
         db.session.commit()
 
@@ -151,3 +166,7 @@ def __get_professor_courses(professor) -> [Course]:
 
 def __get_courses_names(courses) -> [str]:
     return [course.course_name for course in courses]
+
+
+def __get_student_group(student_id) -> int:
+    return Student.query.filter_by(id=student_id).first().semigroup.study_group.group_number
