@@ -4,29 +4,46 @@
 
 {% block page_title %}Professor frontpage{% endblock %}
 
-{% block settings %} <a href="{{ url_for('professor_cod.settings') }}">Settings</a> {% endblock %}
+{% block settings %} <a href="{{ url_for("professor.settings") }}">Settings</a> {% endblock %}
 
 {% block head %}
     {{ super() }}
     <script>
         function save_changes(course_id) {
             var students = [];
+            var group_dates = [];
             var substr = /^student_/;
-            $("table tbody > tr ").each(function() {
+            $("h4.panel-title table tr > th").each(function () {
+                var s_group = $(this).find("label.group").text();
+                var dates = [];
+                if (s_group != "") {
+                    $("h4.panel-title table tr > th." + s_group + " input").each(function (index, value) {
+                        dates.push({grade: [index, $(value).datepicker({dateFormat: 'dd/mm/yyyy'}).val()]});
+                    });
+                    group_dates.push({group: s_group, dates: dates})
+                }
+            });
+            $("div.panel-body table tbody > tr.student").each(function () {
                 students.push({
                             course_id: course_id,
                             student_id: $(this).attr('id').replace(substr, ''),
-                            grade_1: {"value": $(this).find("label input.grade_1").val(),
-                                        "id":  $(this).find("label input.grade_1").attr('id')},
-                            grade_2: {"value": $(this).find("label input.grade_2").val(),
-                                        "id":  $(this).find("label input.grade_2").attr('id')},
-                            grade_3:  {"value": $(this).find("label input.grade_1").val(),
-                                        "id":  $(this).find("label input.grade_1").attr('id')}
+                            grade_1: {
+                                "value": $(this).find("label input.grade_1").val(),
+                                "id": $(this).find("label input.grade_1").attr('id')
+                            },
+                            grade_2: {
+                                "value": $(this).find("label input.grade_2").val(),
+                                "id": $(this).find("label input.grade_2").attr('id')
+                            },
+                            grade_3: {
+                                "value": $(this).find("label input.grade_3").val(),
+                                "id": $(this).find("label input.grade_3").attr('id')
+                            }
                         }
                 );
 
             });
-            var json = JSON.stringify(students, null, '\t');
+            var json = JSON.stringify({students: students, group_dates: group_dates}, null, '\t');
             console.log(json);
             $.ajax({
                 type: "POST",
@@ -49,72 +66,127 @@
     {{ super() }}
 
     <div class="container">
-        <h2>{{ data.selected_course.course_name }} grading</h2> <a class="btn btn-default" role="button" onclick="save_changes({{ data.selected_course.id }})">Save</a>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>First name</th>
-                <th>Last name</th>
-                <th>Grade 1</th>
-                <th>Grade 2</th>
-                <th>Grade 3</th>
-                <th>Final grade</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for student_dict in data.students %}
-                <tr id="student_{{ student_dict.student.id }}">
-                    <td>{{ student_dict.student.first_name }}</td>
-                    <td>{{ student_dict.student.last_name }}</td>
-                    {% for grade in student_dict.grades|sort(attribute='date') %}
-                    <td>
-                        <label>
-                            <input id="{{ grade.id }}" class="grade_{{ loop.index }}" type="text" name="grade {{ loop.index }}" value={{ grade.grade if grade.grade else " " }}>
-                        </label>
-                    </td>
-                    {% endfor %}
-                    <td>{{ student_dict.final_grade if student_dict.final_grade else 0}}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <h2>{{ data.selected_course.course_name }} grading</h2>
+        <h4>{{ data.selected_course.course_description }}</h4>
+        <a class="btn btn-default" role="button" onclick="save_changes({{ data.selected_course.id }})">Save</a>
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                {% for k, v in (data.students_dict|dictsort(true)) %}
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <table id="table_{{ k }}" class="table">
+                                <tr>
+                                    <th>
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ k }}">
+                                            <span class="glyphicon glyphicon-folder-close"></span>
+                                            <label class="group">{{ k }}</label>
+                                        </a>
+                                    </th>
+                                    {% set my_dates = v[0].grades|sort(attribute='date') %}
+                                    <th class="{{ k }}">First date: <input id="defaultPopup_{{ k }}_1" size="10"
+                                                                           class="getdate"
+                                                                           value="{{ my_dates[0].date.strftime('%d/%m/%Y') if my_dates[0].date > data.min_date }} " {{ "disabled" if my_dates[0].date > data.min_date }}>
+                                    </th>
+                                    <th class="{{ k }}">Second date: <input id="defaultPopup_{{ k }}_2" size="10"
+                                                                            class="getdate"
+                                                                            value="{{ my_dates[1].date.strftime('%d/%m/%Y') if my_dates[1].date > data.min_date }} " {{ "disabled" if my_dates[1].date > data.min_date }}>
+                                    </th>
+                                    <th class="{{ k }}">Retake: <input id="defaultPopup_{{ k }}_3" size="10"
+                                                                       class="getdate"
+                                                                       value="{{ my_dates[2].date.strftime('%d/%m/%Y') if my_dates[2].date > data.min_date }} " {{ "disabled" if my_dates[2].date > data.min_date }}>
+                                    </th>
+                                </tr>
+                            </table>
+                        </h4>
+                    </div>
+                    <div id="collapse_{{ k }}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <table class="table">
+                                <tr>
+                                    <th>First name</th>
+                                    <th>Last name</th>
+                                    {% for grade in v[0].grades|sort(attribute='date') %}
+                                        <th>{{ grade.date.strftime('%d/%m/%Y') if grade.date > data.min_date else "Grade " + loop.index|string }}</th>
+                                    {% endfor %}
+                                    <th>Final grade</th>
+
+                                </tr>
+                                {% for student_dict in v %}
+                                    <tr id="student_{{ student_dict.student.id }}" class="student">
+                                        <td>{{ student_dict.student.first_name }}</td>
+                                        <td>{{ student_dict.student.last_name }}</td>
+                                        {% set m_grades = student_dict.grades|sort(attribute='date') %}
+                                        <td>
+                                            <label>
+                                                <input id="{{ m_grades[0].id }}" class="grade_{{ 1 }}"
+                                                       type="text" name="grade {{ 1 }}"
+                                                       value={{ m_grades[0].grade if m_grades[0].grade else "absent" }}
+                                                               {{ "disabled" if m_grades[1].grade or not (data.date_now > data.session_dates[0] and data.date_now < data.session_dates[1]) }}>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+
+                                                <input id="{{ m_grades[1].id }}" class="grade_{{ 2 }}"
+                                                       type="text" name="grade {{ 2 }}"
+                                                       value={{ m_grades[1].grade if m_grades[1].grade else "absent" }}
+                                                               {{ "disabled" if m_grades[0].grade or not (data.date_now > data.session_dates[0] and data.date_now < data.session_dates[1]) }}>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+
+                                                <input id="{{ m_grades[2].id }}" class="grade_{{ 3 }}"
+                                                       type="text" name="grade {{ 3 }}"
+                                                       value={{ m_grades[2].grade if m_grades[2].grade else "absent" }}  {{ "disabled" if not (data.date_now > data.retake_dates[0] and data.date_now < data.retake_dates[1]) }}>
+                                            </label>
+                                        </td>
+                                        <td>{{ student_dict.final_grade if student_dict.final_grade else 0 }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
 {% endblock %}
 
-{% block username %}{{data.username}}{% endblock %}
+{% block username %}{{ data.username }}{% endblock %}
 
 {% block navigation %}
     {{ super() }}
     <li>{% if data.ranks[data.rank_prof] >= 1 %}
         <a href="javascript:" data-toggle="collapse" data-target="#demo">Proposals</a>
-	    <ul id="demo" class="collapse">
+        <ul id="demo" class="collapse">
             <li>
-    			<a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
+                <a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
             </li>
             <li>
-    			<a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
+                <a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
             </li>
-    	</ul>
+        </ul>
 
-        {% else %}
-            <ul id="demo" class="collapse">
+    {% else %}
+        <ul id="demo" class="collapse">
             <li class="disabled">
-    			<a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
+                <a href="{{ url_for('professor.add_proposal') }}">New proposal</a>
             </li>
             <li class="disabled">
-    			<a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
+                <a href="{{ url_for('professor.view_proposals') }}">View proposals</a>
             </li>
-    	</ul>
-        {% endif %}
+        </ul>
+    {% endif %}
 
     </li>
     <li>
         <a href="#collapse1" data-toggle="collapse"> Grading</a>
-	    <ul id="collapse1" class="panel-collapse collapse">
+        <ul id="collapse1" class="panel-collapse collapse">
             {% for course in data.courses %}
-                <li><a href="/prof/grading/{{course.id}}">{{ course.course_name }}</a></li>
+                <li><a href="/prof/grading/{{ course.id }}">{{ course.course_name }}</a></li>
             {% endfor %}
-	    </ul>
+        </ul>
     </li>
 {% endblock %}
