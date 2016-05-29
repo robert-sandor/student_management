@@ -1,8 +1,10 @@
 from app import login_required, db
+from app.modules.common.models import OptionalCourse, Course, Package, Professor, GradeEvaluation, ProposedCourses, \
+    Semester, ProfessorRole
 from app.modules.common.controllers import passchange
-from app.modules.common.models import OptionalCourse, Course, Package, Professor, GradeEvaluation
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for
 from flask_login import current_user
+from random import random, randint
 
 professor_cod = Blueprint('professor_cod', __name__, url_prefix='/prof_cod')
 
@@ -17,14 +19,14 @@ def home():
 @professor_cod.route('/proposals/')
 @login_required(3)
 def proposals():
-    data = {"username": current_user.username, "role": current_user.role, "email": current_user.email}
-    optional_courses = OptionalCourse.query.all()
-    courses = []
-    for optional_course in optional_courses:
-        courses.append(optional_course.course)
-    data["opts"] = optional_courses
-    data["proposals"] = courses
-    data["packages"] = Package.query.all()
+    data = {"username": current_user.username,
+            "role": current_user.role,
+            "email": current_user.email,
+            "proposals": ProposedCourses.query.all(),
+            "packages": Package.query.all(),
+            "profs": Professor.query.all(),
+            "semesters": Semester.query.all(),
+            }
     return render_template("professor_cod/proposals.html", data=data)
 
 @professor_cod.route('/settings/', methods=['GET', 'POST'])
@@ -39,13 +41,50 @@ def settings():
 @professor_cod.route('/proposals/save/', methods=['POST'])
 @login_required(3)
 def save():
-    data = {}
-    for pack in request.json.keys():
-        pack_name = Package.query.filter_by(id=int(pack)).first().name
-        courses = request.json[pack]
-        for course_id in courses:
-            OptionalCourse.query.filter_by(course_id=int(course_id)).update(dict(package_id=int(pack)))
-            db.session.commit()
+    for course in request.json.keys():
+        # Get the corresponding course
+        proposed_course = ProposedCourses.query.filter_by(id=int(course)).first()
+        # Creating course, main entry in Courses table
+        # Course name and description setting
+        course_name = proposed_course.course_name
+        # Needs to be shortened since our course supports only 200 chars
+        course_description = proposed_course.description[:199]
+        # Generating some type of course code, todo: maybe better implementation?
+        course_code = str(proposed_course.speciality[0]).upper() + str(proposed_course.speciality[0]).upper() + str(
+                          randint(1000, 9999))
+        # Get data about professor and semester
+        collected_data = request.json[course]
+        p = Professor.query.filter_by(id=collected_data['prof']).first()
+        last_semester = Semester.query.filter_by(id=collected_data['sem']).first()
+        # Set credits
+        course_credits = int(collected_data['credits'])
+        # Set eval type
+        eval_type = collected_data['eval']
+        # Create course from give data
+        # Settings name as username, seeing as we don't have an ACTUAL name on the prof yet
+        highest_id = db.session.query(Course).order_by(Course.id.desc()).first().id + 1
+        c = Course(id=highest_id, course_name=course_name, course_description=course_description,
+                   code=course_code, professor_name=p.auth_user.username, credits=course_credits,
+                   evaluation_type=eval_type, is_optional=True)
+        c.semester = last_semester
+        db.session.add(c)
+        db.session.commit()
+        # Creating course, optional entry, in OptionalCourses table
+        # Setting of package and language, available directly on proposed course
+        package = collected_data['package']
+        language = proposed_course.study_line
+        # Get latest course added
+        c = db.session.query(Course).order_by(Course.id.desc()).first()
+        # Get the departament using the professor assigned
+        dept = p.department
+        oc = OptionalCourse(course_id=c.id, active=False, id_department=dept.id,
+                            package_id=package, course_language=language)
+
+        db.session.add(oc)
+        # Correlate professor with created course
+        pc = ProfessorRole(professor_id=p.id, course_id=c.id, role_type_id=1)
+        db.session.add(pc)
+        db.session.commit()
     return url_for('professor_cod.home')
 
 

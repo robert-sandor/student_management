@@ -182,11 +182,6 @@ def update_proposal(proposal_id=None):
     proposed_courses = ProposedCourses.query.filter_by(professor_id=prof.id).all()
     proposed_course = ProposedCourses.query.filter_by(id=proposal_id).first()
     form = ProposalForm(request.form)
-    ranks = {"doctorand": 0,
-             "asistent": 1,
-             "conferentiar": 2,
-             "lector": 3,
-             "prof": 4}
 
     data = {"username": current_user.username,
             "role": current_user.role,

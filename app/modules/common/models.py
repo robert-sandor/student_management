@@ -241,6 +241,7 @@ class Professor(db.Model):
     rank = Column(String(50), nullable=False)
     id_department = Column(ForeignKey('department.id'), nullable=False)
     id_user = Column(ForeignKey('auth_user.id'), nullable=False)
+    name = Column(String(20))
 
     department = relationship('Department', primaryjoin='Professor.id_department == Department.id')
     auth_user = relationship('User')
