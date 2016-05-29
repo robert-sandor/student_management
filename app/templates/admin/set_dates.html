@@ -1,0 +1,98 @@
+{% extends "admin/welcome.html" %}
+
+{% block title %}Admin page{% endblock %}
+
+{% block page_title %}{{ data.username }}'s front page{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <style>
+        a:link {
+            text-decoration: none;
+            color: black;
+        }
+        .pagination-centered {
+            padding-top: 1%;
+        }
+    </style>
+    <script>
+        function save_changes() {
+            var section_dates = [];
+            $("div.row-input").each(function() {
+                section_dates.push({
+                            type : $(this).find("label.section").attr('id'),
+                            from: $(this).find("input.from").val(),
+                            to: $(this).find("input.to").val()
+                        }
+                );
+            });
+            var json = JSON.stringify(section_dates, null, '\t');
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('admin_staff.save') }}",
+                data: json,
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    window.location = response;
+                    window.alert('Saved!');
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+{% endblock %}
+
+
+{% block content %}
+    <div class="panel"><a class="btn btn-primary" role="button" onclick="save_changes()">Save</a></div>
+    <div class="panel panel-default">
+        <div class="panel-title">
+            <div class="row">
+                <div class="col-md-2"><label>SECTION</label></div>
+                <div class="col-md-2"><label>FROM</label></div>
+                <div class="col-md-2"><label>TO</label></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="panel-group" id="accordion">
+        {% for item in data.dates %}
+            <div class="panel panel-default">
+                <div class="panel-body">
+                        <div class="row-input" id="row-input">
+                            <div class="col-md-2" id="section">
+                                <label class="section" id={{ item.type }}>
+                                    {% if item.type == 1 %}
+                                        Contract
+                                    {% endif %}
+                                    {% if item.type == 2 %}
+                                        Optional course proposing
+                                    {% endif %}
+                                    {% if item.type == 3 %}
+                                        Optional course accepting
+                                    {% endif %}
+                                    {% if item.type == 4 %}
+                                        Voting
+                                    {% endif %}
+                                </label>
+                            </div>
+                            <div class="col-md-2">
+                                <input id="input-from" class="from" size="16" type=date value={{ item.from_date|string() }}>
+                            </div>
+                            <div class="col-md-2">
+                                <input id="input-to" class="to" size="16" type=date value={{ item.to|string() }}>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
+
+{% block username %}{{ super() }}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+{% endblock %}
