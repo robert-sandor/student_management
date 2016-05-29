@@ -9,6 +9,7 @@ from flask import url_for
 from flask_login import current_user
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from collections import defaultdict
 
 professor_blueprint = Blueprint('professor', __name__, url_prefix='/prof')
 
@@ -92,15 +93,20 @@ def get_students_for_course(course_id):
     courses = __get_professor_courses(current_proffesor)
     students = []
     selected_course = None
+    students_dict = defaultdict(list)
     for course in courses:
         if course.id == int(float(course_id)):
             selected_course = course
             for evaluation in course.evaluation:
                 student = evaluation.contract.student
+                group = student.semigroup.study_group
                 grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in
                                evaluation.grades])
                 final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0)["grade"] if grades else 0
-                students.append({"student": student, "grades": grades, "final_grade": final_grade})
+                students.append({"student": student, "group": group.group_number,  "grades": grades, "final_grade": final_grade})
+    for student in students:
+        students_dict[student["group"]].append(student)
+    print(students_dict)
     data = {"username": current_user.username,
             "role": current_user.role,
             "email": current_user.email,
@@ -108,7 +114,7 @@ def get_students_for_course(course_id):
             "rank_prof": current_proffesor.rank,
             "ranks": ranks,
             "selected_course": selected_course,
-            "students": students}
+            "students_dict": students_dict}
 
     return render_template("professor/grading.html", data=data)
 
@@ -120,9 +126,6 @@ def save():
     course_id = 1
     for element in request.json:
         course_id = element["course_id"]
-        # course = Course.query.get(int(course_id))
-        # student_id = element["student_id"]
-        # student = Student.query.get(int(student_id))
         grade_1_id = int(element["grade_1"]["id"])
         grade_1_value = element["grade_1"]["value"]
         grade_2_id = int(element["grade_2"]["id"])

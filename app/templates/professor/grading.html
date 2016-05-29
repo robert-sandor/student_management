@@ -46,7 +46,6 @@
 {% block content %}
     {{ super() }}
 
-<p>Date: <input type="text" id="date"></p>
     <div class="container">
         <h2>{{ data.selected_course.course_name }} grading</h2> <a class="btn btn-default" role="button" onclick="save_changes({{ data.selected_course.id }})">Save</a>
             <div class="panel-group" id="accordion">
@@ -54,8 +53,9 @@
                     {% for k, v in data.students_dict.items() %}
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ k }}"><span class="glyphicon glyphicon-folder-close">
-                                </span>{{ k }} <input id="defaultPopup" size="10" class="is-datepick">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ k }}">
+                                    <span class="glyphicon glyphicon-folder-close"></span>
+                                    {{ k }} <input id="defaultPopup" size="10" class="is-datepick">
                                 </a>
                             </h4>
                         </div>

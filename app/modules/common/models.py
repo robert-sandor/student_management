@@ -53,10 +53,10 @@ class Semigroup(db.Model):
     __tablename__ = 'semigroup'
 
     id = Column(Integer, primary_key=True, unique=True)
-    semigroup_id = Column(ForeignKey('study_group.id'), nullable=False)
+    study_group_id = Column(ForeignKey('study_group.id'), nullable=False)
     semigroup_number = Column(String(5))
 
-    semigroup = relationship('StudyGroup')
+    study_group = relationship('StudyGroup')
 
 
 class Student(db.Model):
