@@ -1,4 +1,5 @@
 from app import login_required, db
+from app.modules.common.controllers import passchange
 from app.modules.common.models import OptionalCourse, Course, Package, Professor, GradeEvaluation
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for
 from flask_login import current_user
@@ -26,6 +27,14 @@ def proposals():
     data["packages"] = Package.query.all()
     return render_template("professor_cod/proposals.html", data=data)
 
+@professor_cod.route('/settings/', methods=['GET', 'POST'])
+@login_required(3)
+def settings():
+    data = {"username": current_user.username, "role": current_user.role, "email": current_user.email}
+    template = 'professor_cod/settings.html'
+    route = 'professor_cod.settings'
+
+    return passchange(data, request, template, route)
 
 @professor_cod.route('/proposals/save/', methods=['POST'])
 @login_required(3)

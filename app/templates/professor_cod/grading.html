@@ -4,6 +4,8 @@
 
 {% block page_title %}Professor frontpage{% endblock %}
 
+{% block settings %} <a href="{{ url_for('professor_cod.settings') }}">Settings</a> {% endblock %}
+
 {% block head %}
     {{ super() }}
     <script>
