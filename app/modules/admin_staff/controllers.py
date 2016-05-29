@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from app import login_required, db
 from flask import Blueprint,render_template, request
 from flask.ext.login import current_user
@@ -35,26 +37,23 @@ def set_dates():
 @admin_staff.route('/set_dates/', methods=['POST'])
 @login_required(4)
 def save():
-    print("smth")
-    print(request.json)
     for element in request.json:
-        type_section = element["type"]
+        type_section = element['type']
         from_date = element["from"]
         to_date = element["to"]
-        print("blabla" + from_date)
         __save_date(type_section, from_date, to_date)
     return url_for('admin_staff.set_dates')
 
 
 def __save_date(section, from_date, to_date):
     if section is not "" or section is None:
-        print("section-" + section + "-")
-        AdminDates.query.filter_by(type=section).update(from_date=from_date, to=to_date)
+        AdminDates.query.filter_by(type=int(section)).update(dict(from_date=from_date, to=to_date))
         db.session.commit()
 
 
 def get_staff(user_id):
     return AdminStaff.query.filter_by(user_id=user_id).first()
+
 
 def get_date():
     return AdminDates.query.all()

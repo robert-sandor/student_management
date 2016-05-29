@@ -6,7 +6,7 @@
 
 {% block head %}
     {{ super() }}
-     <style>
+    <style>
         a:link {
             text-decoration: none;
             color: black;
@@ -18,11 +18,11 @@
     <script>
         function save_changes() {
             var section_dates = [];
-            $("row").each(function() {
+            $("div.row-input").each(function() {
                 section_dates.push({
-                            "type": $(this).find("label.section").attr('id'),
-                            "from": $(this).find("input.from").val(),
-                            "to": $(this).find("input.to").val()
+                            type : $(this).find("label.section").attr('id'),
+                            from: $(this).find("input.from").val(),
+                            to: $(this).find("input.to").val()
                         }
                 );
             });
@@ -34,6 +34,7 @@
                 contentType: 'application/json;charset=UTF-8',
                 success: function (response) {
                     window.location = response;
+                    window.alert('Saved!');
                 },
                 error: function (error) {
                     console.log(error);
@@ -41,15 +42,6 @@
             });
         }
     </script>
-{#    <script type="text/javascript">#}
-{#        $(".form_datetime").datetimepicker({#}
-{#            format: "dd MM yyyy - hh:ii",#}
-{#            autoclose: true,#}
-{#            todayBtn: true,#}
-{#            pickerPosition: "bottom-left"#}
-{#        });#}
-{#    </script>#}
-
 {% endblock %}
 
 
@@ -59,8 +51,8 @@
         <div class="panel-title">
             <div class="row">
                 <div class="col-md-2"><label>SECTION</label></div>
-                <div class="col-md-2"><label>TO</label></div>
                 <div class="col-md-2"><label>FROM</label></div>
+                <div class="col-md-2"><label>TO</label></div>
             </div>
         </div>
     </div>
@@ -69,7 +61,7 @@
         {% for item in data.dates %}
             <div class="panel panel-default">
                 <div class="panel-body">
-                        <div class="row" id="row">
+                        <div class="row-input" id="row-input">
                             <div class="col-md-2" id="section">
                                 <label class="section" id={{ item.type }}>
                                     {% if item.type == 1 %}
@@ -87,10 +79,10 @@
                                 </label>
                             </div>
                             <div class="col-md-2">
-                                <input class="from" size="16" type="text" value={{ item.from_date|string() }}>
+                                <input id="input-from" class="from" size="16" type=date value={{ item.from_date|string() }}>
                             </div>
                             <div class="col-md-2">
-                                <input class="to" size="16" type="text" value={{ item.to|string() }}>
+                                <input id="input-to" class="to" size="16" type=date value={{ item.to|string() }}>
                             </div>
                         </div>
                 </div>
