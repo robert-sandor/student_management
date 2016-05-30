@@ -121,6 +121,7 @@ class Course(db.Model):
     credits = Column(Integer)
     evaluation_type = Column(String(10), nullable=False)
     is_optional = Column(Boolean, nullable=False, server_default=text("true"))
+    course_language = Column(String(10))
 
     semester = relationship('Semester')
 
@@ -158,7 +159,6 @@ class OptionalCourse(db.Model):
     active = Column(Boolean, nullable=False, server_default=text("false"))
     id_department = Column(ForeignKey('department.id'), nullable=False)
     package_id = Column(ForeignKey('package.id'), nullable=True)
-    course_language = Column(String(10))
 
     course = relationship('Course')
     department = relationship('Department')

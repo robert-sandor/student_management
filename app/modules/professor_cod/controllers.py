@@ -65,25 +65,28 @@ def save():
         course_credits = int(collected_data['credits'])
         # Set eval type
         eval_type = collected_data['eval']
+
+        # Setting language, available directly on proposed course
+        language = proposed_course.study_line
+
         # Create course from give data
         # Settings name as username, seeing as we don't have an ACTUAL name on the prof yet
         highest_id = db.session.query(Course).order_by(Course.id.desc()).first().id + 1
         c = Course(id=highest_id, course_name=course_name, course_description=course_description,
                    code=course_code, professor_name=p.auth_user.username, credits=course_credits,
-                   evaluation_type=eval_type, is_optional=True)
+                   evaluation_type=eval_type, is_optional=True, course_language=language)
         c.semester = last_semester
         db.session.add(c)
         db.session.commit()
         # Creating course, optional entry, in OptionalCourses table
-        # Setting of package and language, available directly on proposed course
+        # Setting of package, available directly on proposed course
         package = collected_data['package']
-        language = proposed_course.study_line
         # Get latest course added
         c = db.session.query(Course).order_by(Course.id.desc()).first()
         # Get the departament using the professor assigned
         dept = p.department
         oc = OptionalCourse(course_id=c.id, active=False, id_department=dept.id,
-                            package_id=package, course_language=language)
+                            package_id=package)
 
         db.session.add(oc)
         # Correlate professor with created course
