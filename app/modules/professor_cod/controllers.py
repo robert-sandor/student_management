@@ -1,10 +1,13 @@
+from datetime import datetime
+
 from app import login_required, db
-from app.modules.common.models import OptionalCourse, Course, Package, Professor, GradeEvaluation, ProposedCourses, \
-    Semester, ProfessorRole
 from app.modules.common.controllers import passchange
-from flask import Blueprint, render_template, jsonify, request, redirect, url_for
+from app.modules.common.models import OptionalCourse, Course, Package, Professor, GradeEvaluation, ProposedCourses, \
+    Semester, ProfessorRole, AdminDates, Student, Evaluation
+from collections import defaultdict
+from flask import Blueprint, render_template, request, url_for
 from flask_login import current_user
-from random import random, randint
+from random import randint
 
 professor_cod = Blueprint('professor_cod', __name__, url_prefix='/prof_cod')
 
@@ -29,6 +32,7 @@ def proposals():
             }
     return render_template("professor_cod/proposals.html", data=data)
 
+
 @professor_cod.route('/settings/', methods=['GET', 'POST'])
 @login_required(3)
 def settings():
@@ -37,6 +41,7 @@ def settings():
     route = 'professor_cod.settings'
 
     return passchange(data, request, template, route)
+
 
 @professor_cod.route('/proposals/save/', methods=['POST'])
 @login_required(3)
@@ -51,7 +56,7 @@ def save():
         course_description = proposed_course.description[:199]
         # Generating some type of course code, todo: maybe better implementation?
         course_code = str(proposed_course.speciality[0]).upper() + str(proposed_course.speciality[0]).upper() + str(
-                          randint(1000, 9999))
+            randint(1000, 9999))
         # Get data about professor and semester
         collected_data = request.json[course]
         p = Professor.query.filter_by(id=collected_data['prof']).first()
@@ -95,21 +100,37 @@ def get_students_for_course(course_id):
     courses = __get_professor_courses(current_proffesor)
     students = []
     selected_course = None
+    students_dict = defaultdict(list)
     for course in courses:
         if course.id == int(float(course_id)):
             selected_course = course
             for evaluation in course.evaluation:
-                student = evaluation.contract.student
-                grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in
-                               evaluation.grades])
+                contract = evaluation.contract
+                student = contract.student
+                group = student.semigroup.study_group
+                grades = list([{"grade": grade.grade,
+                                "date": grade.evaluation_date if grade.evaluation_date else datetime.min.date(),
+                                "id": grade.id} for indx, grade in
+                               enumerate(evaluation.grades)])
                 final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0)["grade"] if grades else 0
-                students.append({"student": student, "grades": grades, "final_grade": final_grade})
+                students.append(
+                    {"student": student, "contract": contract.id, "group": group.group_number, "grades": grades,
+                     "final_grade": final_grade})
+    for student in students:
+        students_dict[student["group"]].append(student)
+    session_dates = __get_session_date()
+    retake_dates = __get_retake_date()
     data = {"username": current_user.username,
             "role": current_user.role,
             "email": current_user.email,
             "courses": courses,
+            "rank_prof": current_proffesor.rank,
+            "min_date": datetime.min.date(),
+            "date_now": datetime.now().date(),
+            "session_dates": session_dates,
+            "retake_dates": retake_dates,
             "selected_course": selected_course,
-            "students": students}
+            "students_dict": students_dict}
 
     return render_template("professor_cod/grading.html", data=data)
 
@@ -117,29 +138,51 @@ def get_students_for_course(course_id):
 @professor_cod.route('/prof_cod/grading/', methods=['POST'])
 @login_required(3)
 def save_grade():
-    print(request.json)
     course_id = 1
-    for element in request.json:
+    group_dates = request.json["group_dates"]
+    group_dates_dict = {}
+    for pair in group_dates:
+        group = int(pair["group"])
+        dates = pair["dates"]
+        dates_dict = {}
+        for elem in dates:
+            dates_dict[elem["grade"][0]] = elem["grade"][1]
+        group_dates_dict[group] = dates_dict
+    for element in request.json["students"]:
         course_id = element["course_id"]
-        # course = Course.query.get(int(course_id))
-        # student_id = element["student_id"]
-        # student = Student.query.get(int(student_id))
+        student_id = element["student_id"]
+        group_number = int(__get_student_group(student_id))
         grade_1_id = int(element["grade_1"]["id"])
         grade_1_value = element["grade_1"]["value"]
         grade_2_id = int(element["grade_2"]["id"])
         grade_2_value = element["grade_2"]["value"]
         grade_3_id = int(element["grade_3"]["id"])
         grade_3_value = element["grade_3"]["value"]
-        __save_grade(grade_1_id, grade_1_value)
-        __save_grade(grade_2_id, grade_2_value)
-        __save_grade(grade_3_id, grade_3_value)
+        __save_grade(grade_1_id, grade_1_value, group_dates_dict[group_number][0])
+        __save_grade(grade_2_id, grade_2_value, group_dates_dict[group_number][1])
+        __save_grade(grade_3_id, grade_3_value, group_dates_dict[group_number][2])
+        __check_if_passed(grade_1_value, grade_2_value, grade_3_value, __get_evaluation_from_grade(grade_1_id))
 
     return url_for('prof_cod.get_students_for_course', course_id=course_id)
 
 
-def __save_grade(grade_id, value):
-    if value is not "" or value is None:
-        GradeEvaluation.query.filter_by(id=grade_id).update(dict(grade=int(value)))
+def __get_session_date():
+    admin_date = AdminDates.query.filter_by(id=1).first()
+    return admin_date.from_date, admin_date.to
+
+
+def __get_retake_date():
+    admin_date = AdminDates.query.filter_by(id=2).first()
+    return admin_date.from_date, admin_date.to
+
+
+def __save_grade(grade_id, value, date):
+    if date is not " " and date is not None and date is not "":
+        c_date = datetime.strptime(date + " 00:00", '%d/%m/%Y %H:%M').date()
+        GradeEvaluation.query.filter_by(id=grade_id).update(dict(evaluation_date=c_date))
+        db.session.commit()
+    if value is not "" and value is not None and not value == "absent":
+        GradeEvaluation.query.filter_by(id=grade_id).update(dict(grade=int(value), present=True))
         db.session.commit()
 
 
@@ -149,3 +192,20 @@ def __get_professor_courses(professor) -> [Course]:
 
 def __get_courses_names(courses) -> [str]:
     return [course.course_name for course in courses]
+
+
+def __get_student_group(student_id) -> int:
+    return Student.query.filter_by(id=student_id).first().semigroup.study_group.group_number
+
+
+def __get_evaluation_from_grade(grade_id) -> Evaluation:
+    return GradeEvaluation.query.filter_by(id=grade_id).first().course
+
+
+def __check_if_passed(grade_1, grade_2, grade_3, evaluation: Evaluation):
+    grades = [grade_1, grade_2, grade_3]
+    grades = list(filter(lambda grade: grade is not "" and grade is not None and not grade == "absent" and int(grade) >= 5, grades))
+    if len(grades) > 0:
+        evaluation._pass = True
+        db.session.commit()
+
