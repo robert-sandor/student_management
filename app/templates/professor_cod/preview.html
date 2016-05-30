@@ -4,23 +4,23 @@
 
 {% block page_title %}COD frontpage{% endblock %}
 
+{% block settings %} <a href="{{ url_for('professor_cod.settings') }}">Settings</a> {% endblock %}
+
 {% block head %}
     {{ super() }}
 {% endblock %}
 
 {% block content %}
     {{ super() }}
-    Welcome!
+    {{ data }}
 {% endblock %}
 
-{% block username %}{{data.username}}{% endblock %}
-
-{% block settings %} <a href="{{ url_for('professor_cod.settings') }}">Settings</a> {% endblock %}
+{% block username %}{{ data.username }}{% endblock %}
 
 {% block navigation %}
     {{ super() }}
     <li>
-        <a href="{{ url_for('professor_cod.proposals') }}">Proposals</a>
+        <a href="{{ url_for('professor_cod.proposals') }}" class="active">Proposals</a>
     </li>
     <li>
         <a href="#collapse1" data-toggle="collapse"> Grading</a>
@@ -30,4 +30,9 @@
             {% endfor %}
 	    </ul>
     </li>
+{% endblock %}
+
+
+{% block additional_js %}
+
 {% endblock %}

@@ -24,7 +24,6 @@ class Contract(db.Model):
 
     student = relationship('Student')
     evaluation = relationship('Evaluation')
-    semester = relationship('Semester')
 
 
 class GradeEvaluation(db.Model):
@@ -123,6 +122,7 @@ class Course(db.Model):
     credits = Column(Integer)
     evaluation_type = Column(String(10), nullable=False)
     is_optional = Column(Boolean, nullable=False, server_default=text("true"))
+    course_language = Column(String(10))
 
     semester = relationship('Semester')
 
@@ -160,7 +160,6 @@ class OptionalCourse(db.Model):
     active = Column(Boolean, nullable=False, server_default=text("false"))
     id_department = Column(ForeignKey('department.id'), nullable=False)
     package_id = Column(ForeignKey('package.id'), nullable=True)
-    course_language = Column(String(10))
 
     course = relationship('Course')
     department = relationship('Department')
@@ -246,6 +245,7 @@ class Professor(db.Model):
     rank = Column(String(50), nullable=False)
     id_department = Column(ForeignKey('department.id'), nullable=False)
     id_user = Column(ForeignKey('auth_user.id'), nullable=False)
+    name = Column(String(20))
 
     department = relationship('Department', primaryjoin='Professor.id_department == Department.id')
     auth_user = relationship('User')
@@ -295,6 +295,14 @@ class ProposedCourses(db.Model):
         self.study_line = study_line
         self.description = description
 
+
+class AdminDates(db.Model):
+    __tablename__ = 'admin_dates'
+
+    id = Column(Integer, primary_key=True, nullable=False)
+    type = Column(Integer, nullable=False)
+    from_date = Column(Date, nullable=False)
+    to = Column(Date, nullable=False)
 
 
 

@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, \
     flash, session, redirect, url_for
 from werkzeug.security import check_password_hash
-from flask.ext.login import login_user, login_required, logout_user
+from flask.ext.login import login_user, login_required, logout_user, current_user
 
 from app.modules.mod_auth.forms import LoginForm
 from app.modules.mod_auth.models import User
@@ -11,28 +11,39 @@ mod_auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 @mod_auth.route('/signin/', methods=['GET', 'POST'])
 def signin():
-    form = LoginForm(request.form)
-    if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data).first()
-        if user and check_password_hash(user.password, form.password.data):
-            session['user_id'] = user.id
-            flash('Welcome %s' % user.username)
+    user_routes = {
+        1: 'student.home',
+        2: 'professor.home',
+        3: 'professor_cod.home',
+        4: 'admin_staff.home'
+    }
 
-            user_routes = {
-                1: 'student.home',
-                2: 'professor.home',
-                3: 'professor_cod.home',
-                4: 'admin_staff.home'
-            }
+    if request.method == "POST":
+        form = LoginForm(request.form)
 
-            if user.role in range(1, user_routes.__len__() + 1):
-                login_user(user)
-                return redirect(url_for(user_routes[user.role]))
-            else:
-                return redirect(url_for('404'))
+        if form.validate():
+            user = User.query.filter_by(email = form.email.data).first()
 
-        flash('Wrong email or password', 'error-message')
-    return render_template("auth/signin.html", form=form)
+            if user is None:
+                flash("No user with email " + form.email.data + " exists !")
+                return render_template('auth/signin.html', form=form)
+
+            if not check_password_hash(user.password, form.password.data):
+                flash("Incorrect email or password !")
+                return render_template('auth/signin.html', form=form)
+
+            login_user(user, remember = form.remember.data)
+
+            return redirect(url_for(user_routes[user.get_role()]))
+
+        flash("Incorrect data entered! Try again!")
+        return render_template('auth/signin.html', form=form)
+
+    else:
+        if current_user is not None and current_user.is_authenticated:
+            return redirect(url_for(user_routes[current_user.get_role()]))
+
+        return render_template('auth/signin.html', form=LoginForm())
 
 
 @mod_auth.route('/logout/', methods=['GET', 'POST'])

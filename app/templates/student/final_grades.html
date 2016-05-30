@@ -1,0 +1,51 @@
+{% extends "student/welcome.html" %}
+
+{% block title %}Student grades{% endblock %}
+
+{% block page_title %}Student grades{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+  <h2>{{ data.first_name }} {{ data.last_name }}'s grades</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Course</th>
+        <th>Passed</th>
+        <th>Evaluation date</th>
+        <th>Final grade</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for course in data.courses %}
+        <tr>
+            <td>{{ course.course }}</td>
+            {% if course.final_grade["grade"]|string() >= "5"%}
+                <td>
+                    <p class="text-success">Passed</p>
+                </td>
+            {% endif %}
+            {% if course.final_grade["grade"]|string() < "5"%}
+                <td>
+                    <p class="text-danger">Failed</p>
+                </td>
+            {% endif %}
+            <td>{{ course.final_grade["date"] if course.final_grade != 0 else "-" }}</td>
+            <td>{{ course.final_grade["grade"] if course.final_grade else "Failed"}}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block username %}{{ super() }}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+{% endblock %}

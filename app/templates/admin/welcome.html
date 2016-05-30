@@ -1,0 +1,22 @@
+{% extends "common/base.html" %}
+
+{% block title %}Administrative staff{% endblock %}
+
+{% block page_title %}Administrative staff{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+{% endblock %}
+
+{% block username %}{{data.username}}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li>
+    	<a href="{{ url_for('admin_staff.set_dates')}}")>Set Dates</a>
+    </li>
+{% endblock %}

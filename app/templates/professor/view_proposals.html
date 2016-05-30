@@ -4,6 +4,8 @@
 
 {% block page_title %}Proposals{% endblock %}
 
+{% block settings %} <a href="{{ url_for("professor.settings") }}">Settings</a> {% endblock %}
+
 {% block head %}
     {{ super() }}
 {% endblock %}
@@ -82,6 +84,11 @@
     	</ul>
     </li>
     <li>
-        <a href="#">Grading</a>
+        <a href="#collapse1" data-toggle="collapse"> Grading</a>
+	    <ul id="collapse1" class="panel-collapse collapse">
+            {% for course in data.courses %}
+                <li><a href="/prof/grading/{{course.id}}">{{ course.course_name }}</a></li>
+            {% endfor %}
+	    </ul>
     </li>
 {% endblock %}

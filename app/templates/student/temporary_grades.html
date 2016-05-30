@@ -1,0 +1,52 @@
+{% extends "student/welcome.html" %}
+
+{% block title %}Student temporary grades{% endblock %}
+
+{% block page_title %}Student temporary grades{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+    <div class="container">
+    <h2>{{ data.first_name }} {{ data.last_name }}'s temporary grades</h2>
+    <table class="table">
+    <thead>
+      <tr>
+        <th>Course</th>
+        <th>Exam session date</th>
+        <th>Grade</th>
+        <th>Reexamination date</th>
+        <th>Grade</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for course in data.courses %}
+        <tr>
+            <td>{{ course.course }}</td>
+            {% for grade in course.grades|sort(attribute='date') %}
+                {% if grade.grade %}
+                    <td>{{ grade.date }}</td>
+                    <td>{{ grade.grade }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
+
+{% block username %}
+    {{ super() }}
+{% endblock %}
+
+{%  block role %}
+    {{ super() }}
+{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+{% endblock %}
