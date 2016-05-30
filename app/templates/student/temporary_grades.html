@@ -10,32 +10,47 @@
 
 
 {% block content %}
-    <div class="container">
     <h2>{{ data.first_name }} {{ data.last_name }}'s temporary grades</h2>
     <table class="table">
     <thead>
       <tr>
+        <th>Semester</th>
+        <th>Code</th>
         <th>Course</th>
         <th>Exam session date</th>
         <th>Grade</th>
+        <th>Passed</th>
         <th>Reexamination date</th>
         <th>Grade</th>
+        <th>Passed</th>
       </tr>
     </thead>
     <tbody>
     {% for course in data.courses %}
         <tr>
+            <td>{{ course.semester }}</td>
+            <td>{{ course.code }}</td>
             <td>{{ course.course }}</td>
-            {% for grade in course.grades|sort(attribute='date') %}
-                {% if grade.grade %}
-                    <td>{{ grade.date }}</td>
-                    <td>{{ grade.grade }}</td>
-                {% endif %}
-            {% endfor %}
+            {% if course.grades[1].grade %}
+                <td>{{ course.grades[1].date }}</td>
+                <td>{{ course.grades[1].grade }}</td>
+                <td><label class="text-info">{{ "Passed" if course.grades[1].grade >= 5 else "Failed" }}</label> </td>
+                {% elif course.grades[2] %}
+                    <td>{{ course.grades[2].date }}</td>
+                    <td>{{ course.grades[2].grade }}</td>
+                    <td><label class="text-info">{{ "Passed" if course.grades[2].grade >= 5 else "Failed" }}</label> </td>
+                {% else %}
+                    <td>Absent</td>
+                    <td>Failed</td>
+                    <td><label class="text-info"> Failed </label></td>
+            {% endif %}
+            <td>{{ course.grades[0].date }}</td>
+            <td>{{ course.grades[0].grade }}</td>
+            <td><label class="text-info">{{ "Passed" if course.grades[0].grade >= 5 else "Failed" }}</label> </td>
         </tr>
     {% endfor %}
     </tbody>
-  </table>
+    </table>
 </div>
 {% endblock %}
 
