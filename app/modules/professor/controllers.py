@@ -1,7 +1,8 @@
 from app import login_required, db
 from app.modules.common.controllers import passchange
 from app.modules.common.forms import PasswdChangeForm
-from app.modules.common.models import Course, GradeEvaluation, Student, AdminDates, Professor, ProposedCourses
+from app.modules.common.models import Course, GradeEvaluation, Student, AdminDates, Professor, ProposedCourses, \
+    Evaluation
 from app.modules.professor.forms import ProposalForm
 from config import SQLALCHEMY_DATABASE_URI
 from flask import Blueprint, render_template, request, url_for, redirect
@@ -168,6 +169,7 @@ def save():
         __save_grade(grade_1_id, grade_1_value, group_dates_dict[group_number][0])
         __save_grade(grade_2_id, grade_2_value, group_dates_dict[group_number][1])
         __save_grade(grade_3_id, grade_3_value, group_dates_dict[group_number][2])
+        __check_if_passed(grade_1_value, grade_2_value, grade_3_value, __get_evaluation_from_grade(grade_1_id))
 
     return url_for('professor.get_students_for_course', course_id=course_id)
 
@@ -241,7 +243,7 @@ def __save_grade(grade_id, value, date):
         GradeEvaluation.query.filter_by(id=grade_id).update(dict(evaluation_date=c_date))
         db.session.commit()
     if value is not "" and value is not None and not value == "absent":
-        GradeEvaluation.query.filter_by(id=grade_id).update(dict(grade=int(value)))
+        GradeEvaluation.query.filter_by(id=grade_id).update(dict(grade=int(value), present=True))
         db.session.commit()
 
 
@@ -255,3 +257,17 @@ def __get_courses_names(courses) -> [str]:
 
 def __get_student_group(student_id) -> int:
     return Student.query.filter_by(id=student_id).first().semigroup.study_group.group_number
+
+
+def __get_evaluation_from_grade(grade_id) -> Evaluation:
+    return GradeEvaluation.query.filter_by(id=grade_id).first().course
+
+
+def __check_if_passed(grade_1, grade_2, grade_3, evaluation: Evaluation):
+    grades = [grade_1, grade_2, grade_3]
+    grades = list(filter(lambda grade: grade is not "" and grade is not None and not grade == "absent" and int(grade) >= 5, grades))
+    if len(grades) > 0:
+        evaluation._pass = True
+        db.session.commit()
+
+
