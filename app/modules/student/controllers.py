@@ -1,3 +1,5 @@
+import operator
+
 from app.modules.common.controllers import passchange
 from sqlalchemy import func
 
@@ -64,10 +66,13 @@ def grades_final():
     for contract in student.contract:
         for evaluation in contract.evaluation:
             course = get_course(evaluation.course_id)
-            grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id} for grade in
+            semester = course.semester.semester
+            grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id, "present": grade.present} for grade in
                                evaluation.grades])
-            final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0) if grades else 0
-            courses.append({"course": course.course_name, "grades": grades, "final_grade": final_grade})
+            final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else -1) if grades else -1
+            grades.sort(key=operator.itemgetter('date'), reverse=True)
+            courses.append({"course": course.course_name, "grades": grades, "final_grade": final_grade,
+                            "passed": evaluation._pass, "semester": semester, "code": course.code})
     data = {"username": current_user.username,
             "role": current_user.role,
             "first_name": student.first_name,
