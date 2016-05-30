@@ -10,14 +10,34 @@
 
 {% block content %}
     {{ super() }}
-    Content goes here! HTML, CSS, you name it. This will scroll.
 {% endblock %}
 
 {% block username %}{{data.username}}{% endblock %}
 
+{% block settings %} <a href="{{ url_for("student.settings") }}">Settings</a> {% endblock %}
+
 {% block navigation %}
     {{ super() }}
     <li>
-        <a href="#">Grades</a>
+        <a href="javascript:" data-toggle="collapse" data-target="#demo"> Grades</a>
+	    <ul id="demo" class="collapse">
+            <li>
+    			<a href="{{ url_for('student.grades_temporary')}}")>Temporary</a>
+            </li>
+            <li>
+    			<a href="{{ url_for('student.grades_final')}}")>Final</a>
+            </li>
+    	</ul>
+    </li>
+    <li>
+        <a href="javascript:" data-toggle="collapse" data-target="#demo2">Study contracts</a>
+	    <ul id="demo2" class="collapse">
+            <li>
+    			<a href="{{ url_for('student.list_contracts') }}")>List contracts</a>
+            </li>
+            <li>
+    			<a href="{{ url_for('student.list_contracts') }}")>Add contract</a>
+            </li>
+    	</ul>
     </li>
 {% endblock %}
