@@ -8,75 +8,75 @@
     {{ super() }}
 {% endblock %}
 
-
 {% block content %}
-    <h2>Contracts</h2>
-    <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#menu1">Sem 1</a></li>
-        <li><a data-toggle="tab" href="#menu2">Sem 2</a></li>
-        <li><a data-toggle="tab" href="#menu3">Sem 3</a></li>
-        <li><a data-toggle="tab" href="#menu4">Sem 4</a></li>
-        <li><a data-toggle="tab" href="#menu5">Sem 5</a></li>
-        <li><a data-toggle="tab" href="#menu6">Sem 6</a></li>
-    </ul>
+    {{ super() }}
+    <h2>Study contracts</h2>
+    <div class="panel-default">
+        <div class="panel-heading">
+            <div class="row">
+        <h4>
+            <p class="text-center">{{ data.faculty }}   {{ data.specialty }}-{{ data.study_line }}   {{ data.study_level }}</p>
+        </h4>
+    </div>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <p class="text-center">
+                Name: <label class="text-info"> {{ data.first_name }} {{ data.last_name }} </label>
+                Serial number: <label class="text-info"> {{ data.serial_number }} </label>
+                Group: <label class="text-info"> {{ data.group }} </label>
+                Study year: <label class="text-info"> {{ data.year }} </label>
+                Current semester: <label class="text-info"> {{ data.semester }} </label>
+                </p>
+            </div>
+        </div>
+    </div>
 
-  <div class="tab-content">
-    <div id="home" class="tab-pane fade in active">
-      <h3>HOME</h3>
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-    </div>
-    <div id="menu1" class="tab-pane fade">
-      <h3>Menu 1</h3>
-      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    </div>
-    <div id="menu2" class="tab-pane fade">
-      <h3>Menu 2</h3>
-      <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
-    </div>
-    <div id="menu3" class="tab-pane fade">
-      <h3>Menu 3</h3>
-      <p>Eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-    </div>
-  </div>
-    {% for contract in data.contracts %}
-        <div>{{ contract.faculty }} {{ contract.specialty }}, {{ contract.study_line }}, {{ contract.study_level }}</div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Code</th>
-                    <th>Course</th>
-                    <th>Credits</th>
-                </tr>
-            </thead>
-            <tbody>
-                <div class="panel panel-default">
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+                {% for k, v in (data.contracts|dictsort(true)) %}
                     <div class="panel-heading">
-                        <div class="row">
-                            <div class="col-md-2"><label>Name</label></div>
-                            <div class="col-md-2"><label>Serial number</label></div>
-                            <div class="col-md-2"><label>Group</label></div>
-                            <div class="col-md-2"><label>Study year</label></div>
-                            <div class="col-md-2"><label>Semester</label></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-2"><label class="text-info">{{ data.first_name }} {{ data.last_name }}</label></div>
-                            <div class="col-md-2"><label class="text-info">{{ data.serial_number }}</label></div>
-                            <div class="col-md-2"><label class="text-info">{{ contract.group }}</label></div>
-                            <div class="col-md-2"><label class="text-info">{{ contract.study_year }}</label></div>
-                            <div class="col-md-2"><label class="text-info">{{ contract.current_semester }}</label></div>
+                        <h4 class="panel-title">
+                            <table id="table_{{ k }}" class="table">
+                                <tr>
+                                    <th>
+                                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse_{{ k }}">
+                                            <span class="glyphicon glyphicon-folder-close"></span>
+                                            <label class="semester">{{ "Semester " ~ k ~ " "}} </label>
+                                        </a>
+                                    </th>
+                                </tr>
+                            </table>
+                        </h4>
+                    </div>
+                    <div id="collapse_{{ k }}" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            {% if v[0] != none %}
+                            <table class="table">
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Code</th>
+                                    <th>Credits</th>
+                                    <th>Passed</th>
+                                </tr>
+                                {% for course in v %}
+                                    <tr>
+                                        <td>{{ course.course }}</td>
+                                        <td>{{ course.code }}</td>
+                                        <td>{{ course.credits }}</td>
+                                        <td>{{ course.pass }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                            {% endif %}
+                            {% if v[0] == none %}
+                                <p class="text-center">Please add a study contract!</p>
+                            {% endif %}
                         </div>
                     </div>
-                </div>
-                {% for course in  contract.courses %}
-                    <tr>
-                        <td>{{ course.code }}</td>
-                        <td>{{ course.course }}</td>
-                        <td>{{ course.credits }}</td>
-                    </tr>
                 {% endfor %}
-            </tbody>
-        </table>
-    {% endfor %}
+            </div>
+        </div>
 {% endblock %}
 
 {% block username %}{{ super() }}{% endblock %}
