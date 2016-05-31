@@ -1,3 +1,8 @@
+{#Members of the administrative staff of the faculty are able to ask and print different documents like:#}
+{#The list of students from each group ordered by their professional results#}
+{#The list of students from each year ordered by their professional results or complying
+with some criteria like the average mark included in an interval, a.s.o.#}
+
 {% extends "common/base.html" %}
 
 {% block title %}Administrative staff{% endblock %}
@@ -10,13 +15,20 @@
 
 {% block content %}
     {{ super() }}
+
+    <h2>Welcome to admin page, {{ data.username }}</h2>
 {% endblock %}
 
-{% block username %}{{data.username}}{% endblock %}
+{% block username %}{{ data.username }}{% endblock %}
+
+{% block settings %} <a href="{{ url_for('admin_staff.settings') }}">Settings</a> {% endblock %}
 
 {% block navigation %}
     {{ super() }}
     <li>
-    	<a href="{{ url_for('admin_staff.set_dates')}}")>Set Dates</a>
+        <a href="{{ url_for('admin_staff.set_dates') }}" )>Set Dates</a>
+    </li>
+    <li>
+        <a href="{{ url_for('admin_staff.list_students') }}">List Students</a>
     </li>
 {% endblock %}
