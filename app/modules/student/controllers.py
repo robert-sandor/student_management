@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import operator
 
 from app.modules.common.controllers import passchange
@@ -75,7 +77,7 @@ def grades_final():
             grades = list([{"grade": grade.grade, "date": grade.evaluation_date, "id": grade.id, "present": grade.present} for grade in
                                evaluation.grades])
             final_grade = max(grades, key=lambda x: x["grade"] if x["grade"] else 0) if grades else 0
-            newlist = sorted(grades, key=lambda k: k['date'] if k['date'] is not None else -1)
+            newlist = sorted(grades, key=lambda k: k['date'] if k['date'] is not None else datetime.min.date())
             courses.append({"course": course.course_name, "grades": newlist, "final_grade": final_grade,
                             "passed": evaluation._pass, "semester": semester, "code": course.code})
     data = {"username": current_user.username,
