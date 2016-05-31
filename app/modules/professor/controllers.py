@@ -228,12 +228,12 @@ def delete_proposal(proposal_id=None):
 
 
 def __get_session_date():
-    admin_date = AdminDates.query.filter_by(id=1).first()
+    admin_date = AdminDates.query.filter_by(id=5).first()
     return admin_date.from_date, admin_date.to
 
 
 def __get_retake_date():
-    admin_date = AdminDates.query.filter_by(id=2).first()
+    admin_date = AdminDates.query.filter_by(id=6).first()
     return admin_date.from_date, admin_date.to
 
 
