@@ -1,0 +1,125 @@
+{% extends "student/welcome.html" %}
+
+{% block title %}Add contract{% endblock %}
+
+{% block page_title %}Add contract{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+{% block content %}
+  <h2>{{ data.first_name }} {{ data.last_name }}'s contract</h2>
+    <div class="container-fluid">
+        <ul class="nav navbar-left nav-pills" role="tablist">
+            {% for semester in data.semesters %}
+                {% if loop.first %}
+                    <li role="presentation" class="active">
+                        <a href="#tab_nr{{ semester.semester }}" aria-controls="tab_nr{{ semester.semester }}" role="tab" data-toggle="tab">Semester {{ semester.semester }}</a>
+                    </li>
+                {% else %}
+                    <li role="presentation">
+                        <a href="#tab_nr{{ semester.semester }}" aria-controls="tab_nr{{ semester.semester }}" role="tab" data-toggle="tab">Semester {{ semester.semester }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+            </ul>
+        <div class="tab-content">
+        {% for semester in data.semesters %}
+            {% if loop.first %}
+                <div role="tabpanel" class="tab-pane fade in active" id="tab_nr{{ semester.semester  }}">
+                    <table class="table table-condensed">
+                        {% for course in data.courses[semester.semester] %}
+                            {% if loop.first %}
+                            <tr>
+                                <th>Course code</th>
+                                <th>Course name</th>
+                                <th>Language</th>
+                                <th>Credits</th>
+                            </tr>
+                            <tr>
+                                <td>{{ course.code }}</td>
+                                <td>{{ course.course_name }}</td>
+                                <td>{{ course.course_language }}</td>
+                                <td>{{ course.credits }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td>{{ course.code }}</td>
+                                <td>{{ course.course_name }}</td>
+                                <td>{{ course.course_language }}</td>
+                                <td>{{ course.credits }}</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                {% for package_id, package in data.packages.items() %}
+            {% for course in package %}
+                {% if course.semester_nr == semester.semester %}
+                <table class="table table-condensed">
+                            <tr>
+                                <td>{{ course.code }}</td>
+                                <td>{{ course.course_name }}</td>
+                                <td>{{ course.course_language }}</td>
+                                <td>{{ course.credits }}</td>
+                            </tr>
+                </table>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+                </div>
+            {% else %}
+                <div role="tabpanel" class="tab-pane fade" id="tab_nr{{ semester.semester  }}">
+                    <table class="table table-condensed">
+                        {% for course in data.courses[semester.semester] %}
+                            {% if loop.first %}
+                            <tr>
+                                <th>Course code</th>
+                                <th>Course name</th>
+                                <th>Language</th>
+                                <th>Credits</th>
+                            </tr>
+                            <tr>
+                                <td>{{ course.code }}</td>
+                                <td>{{ course.course_name }}</td>
+                                <td>{{ course.course_language }}</td>
+                                <td>{{ course.credits }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td>{{ course.code }}</td>
+                                <td>{{ course.course_name }}</td>
+                                <td>{{ course.course_language }}</td>
+                                <td>{{ course.credits }}</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                {% for package_id, package in data.packages.items() %}
+            {% for course in package %}
+                {% if course.semester_nr == semester.semester %}
+                <table class="table table-condensed">
+                            <tr>
+                                <td>{{ course.code }}</td>
+                                <td>{{ course.course_name }}</td>
+                                <td>{{ course.course_language }}</td>
+                                <td>{{ course.credits }}</td>
+                            </tr>
+                </table>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block username %}{{ super() }}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+{% endblock %}

@@ -303,13 +303,3 @@ class AdminDates(db.Model):
     type = Column(Integer, nullable=False)
     from_date = Column(Date, nullable=False)
     to = Column(Date, nullable=False)
-
-
-
-class AdminDates(db.Model):
-    __tablename__ = 'admin_dates'
-
-    id = Column(Integer, primary_key=True, nullable=False)
-    type = Column(Integer, nullable=False)
-    from_date = Column(Date, nullable=False)
-    to = Column(Date, nullable=False)
