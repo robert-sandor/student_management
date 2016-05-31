@@ -1,4 +1,3 @@
-# coding: utf-8
 from sqlalchemy import Boolean, Column, Date, ForeignKey, ForeignKeyConstraint, Integer, SmallInteger, String, text
 from sqlalchemy.orm import relationship
 from app import db

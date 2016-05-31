@@ -1,0 +1,29 @@
+{% extends "common/base.html" %}
+
+{% block title %}admin frontpage{% endblock %}
+
+{% block page_title %}admin frontpage{% endblock %}
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <br>
+    Email: {{ data.email }} <br>
+    Role: {{ data.role }} <br>
+    Status: {{ data.status }}
+{% endblock %}
+
+{% block username %}{{data.username}}{% endblock %}
+
+{% block navigation %}
+    {{ super() }}
+    <li>
+        <a href="#">Professors</a>
+    </li>
+    <li>
+        <a href="#">administrative</a>
+    </li>
+{% endblock %}
