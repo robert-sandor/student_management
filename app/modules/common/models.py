@@ -233,6 +233,9 @@ class Year(db.Model):
 
     study_plan = relationship('StudyPlan')
 
+    def __repr__(self):
+        return str(self.study_year)
+
 
 class Professor(db.Model):
     __tablename__ = 'professor'

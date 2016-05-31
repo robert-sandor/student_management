@@ -1,0 +1,101 @@
+{% extends "admin/welcome.html" %}
+
+{% block title %}List of students{% endblock %}
+
+{% block page_title %}List of students{% endblock %}
+
+{% block content %}
+
+    {% for message in get_flashed_messages() %}
+        <strong>Log : </strong>{{ message }}
+    {% endfor %}
+
+
+    <form action="{{ url_for('admin_staff.list_students') }}" method="post" class="form-inline">
+        <div class="btn-group">
+            <label for="year-select">Year : </label>
+
+            <select name="year-select" id="year-select" class="form-control">
+
+                <option value="">Select year</option>
+
+                {% for year in data.years %}
+
+                    {% if data.selected_year == year.id %}
+                        <option value="{{ year.id }}" selected="selected">{{ year.study_year }}</option>
+                    {% else %}
+                        <option value="{{ year.id }}">{{ year.study_year }}</option>
+                    {% endif %}
+
+
+                {% endfor %}
+
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <label for="group-select">
+                Group :
+            </label>
+            <select name="group-select" id="group-select" class="form-control">
+                <option value="">Select Group</option>
+
+                {% for group in data.groups %}
+
+                    {% if data.selected_group == group.id %}
+                        <option value="{{ group.id }}" selected="selected">
+                            {{ group.group_number }}
+                        </option>
+                    {% else %}
+                        <option value="{{ group.id }}">
+                            {{ group.group_number }}
+                        </option>
+                    {% endif %}
+
+                {% endfor %}
+
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </form>
+
+    <hr>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Serial Number</th>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Average Mark</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for student in data.students %}
+            <tr>
+
+                <td>
+                    {{ student.serial_number }}
+                </td>
+
+                <td>
+                    {{ student.last_name }}
+                </td>
+
+                <td>
+                    {{ student.first_name }}
+                </td>
+
+                <td>
+                    {{ student.mark }}
+                </td>
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
