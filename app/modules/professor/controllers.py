@@ -61,6 +61,7 @@ def settings():
 @login_required(2)
 def add_proposal():
     prof = Professor.query.filter_by(id_user=current_user.id).first()
+    courses = __get_professor_courses(prof)
     proposed_courses = ProposedCourses.query.filter_by(professor_id=prof.id).all()
     form = ProposalForm(request.form)
 
@@ -69,6 +70,8 @@ def add_proposal():
             "email": current_user.email,
             "rank_prof": prof.rank,
             "ranks": ranks,
+            "selected_course": None,
+            "courses": courses,
             "no_proposals": proposed_courses.__len__(),
             "max_proposals": 2}
 
