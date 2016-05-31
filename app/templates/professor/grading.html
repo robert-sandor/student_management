@@ -66,7 +66,8 @@
     {{ super() }}
 
     <div class="container">
-        <h2>{{ data.selected_course.course_name }} grading</h2>
+        <h2>{{ data.selected_course.course_name }} grading </h2>
+        <h3>{{ data.selected_course.code }} - {{ data.selected_course.course_language }}</h3>
         <h4>{{ data.selected_course.course_description }}</h4>
         <a class="btn btn-default" role="button" onclick="save_changes({{ data.selected_course.id }})">Save</a>
         <div class="panel-group" id="accordion">
@@ -185,7 +186,7 @@
         <a href="#collapse1" data-toggle="collapse"> Grading</a>
         <ul id="collapse1" class="panel-collapse collapse">
             {% for course in data.courses %}
-                <li><a href="/prof/grading/{{ course.id }}">{{ course.course_name }}</a></li>
+                <li><a href="/prof/grading/{{ course.id }}">{{ course.course_name }} - {{ course.course_language }}</a></li>
             {% endfor %}
         </ul>
     </li>
