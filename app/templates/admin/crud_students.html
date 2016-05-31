@@ -14,6 +14,56 @@
     </style>
 
     <script>
+     function save_changes(course_id) {
+            var students = [];
+            var group_dates = [];
+            var substr = /^student_/;
+            $("h4.panel-title table tr > th").each(function () {
+                var s_group = $(this).find("label.group").text();
+                var dates = [];
+                if (s_group != "") {
+                    $("h4.panel-title table tr > th." + s_group + " input").each(function (index, value) {
+                        dates.push({grade: [index, $(value).datepicker({dateFormat: 'dd/mm/yyyy'}).val()]});
+                    });
+                    group_dates.push({group: s_group, dates: dates})
+                }
+            });
+            $("div.panel-body table tbody > tr.student").each(function () {
+                students.push({
+                            course_id: course_id,
+                            student_id: $(this).attr('id').replace(substr, ''),
+                            grade_1: {
+                                "value": $(this).find("label input.grade_1").val(),
+                                "id": $(this).find("label input.grade_1").attr('id')
+                            },
+                            grade_2: {
+                                "value": $(this).find("label input.grade_2").val(),
+                                "id": $(this).find("label input.grade_2").attr('id')
+                            },
+                            grade_3: {
+                                "value": $(this).find("label input.grade_3").val(),
+                                "id": $(this).find("label input.grade_3").attr('id')
+                            }
+                        }
+                );
+
+            });
+            var json = JSON.stringify({students: students, group_dates: group_dates}, null, '\t');
+            console.log(json);
+            $.ajax({
+                type: "POST",
+                url: "{{ url_for('professor.save') }}",
+                data: json,
+                contentType: 'application/json;charset=UTF-8',
+                success: function (response) {
+                    window.location = response;
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+
     $(document).ready(function() {
     $("#add_row").on("click", function() {
         // Dynamic Rows Code
