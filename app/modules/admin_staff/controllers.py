@@ -94,10 +94,14 @@ def list_students():
 @admin_staff.route('/crud_students/', methods=['GET', 'POST'])
 @login_required(4)
 def crud_students():
+    groups = StudyGroup.query.all()
+    groups = list(map(lambda group: {"id": group.id, "value": group.group_number}, groups))
+
     data = {"username": current_user.username,
             "email": current_user.email,
             "role": current_user.role,
-            "status": current_user.status}
+            "status": current_user.status,
+            "groups": groups}
     return render_template("admin/crud_students.html", data=data)
 
 

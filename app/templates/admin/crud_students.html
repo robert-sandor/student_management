@@ -55,16 +55,6 @@
             }
         });
 
-        // add delete button and td
-        /*
-        $("<td></td>").append(
-            $("<button class='btn btn-danger glyphicon glyphicon-remove row-remove'></button>")
-                .click(function() {
-                    $(this).closest("tr").remove();
-                })
-        ).appendTo($(tr));
-        */
-
         // add the new row
         $(tr).appendTo($('#tab_logic'));
 
@@ -139,10 +129,9 @@
 						</td>
     					<td data-name="sel">
 						    <select name="sel0">
-        				        <option value="">Select Group</option>
-    					        <option value="1">Option 1</option>
-        				        <option value="2">Option 2</option>
-        				        <option value="3">Option 3</option>
+                                {% for group in data.groups %}
+        				        <option value="{{ group.id }}">{{ group.value }}</option>
+    					        {% endfor %}
 						    </select>
 						</td>
                         <td data-name="del">
