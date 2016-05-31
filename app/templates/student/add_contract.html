@@ -6,6 +6,31 @@
 
 {% block head %}
     {{ super() }}
+    <style type="text/css">
+        .table.table-hover {
+            width: 100px;
+        }
+    </style>
+    <script type="text/javascript">
+        function SomeDeleteRowFunction(btndel) {
+    if (typeof(btndel) == "object") {
+        $(btndel).closest("tr");
+        var this_row = document.getElementById("row1");
+        var table = document.getElementById("table1")
+        var row = table.insertRow();
+        var cell1 = row.insertCell(0); var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2); var cell4 = row.insertCell(3);
+        cell1.innerHTML = this_row.cells.item(0).innerHTML;
+         cell2.innerHTML = this_row.cells.item(1).innerHTML;
+         cell3.innerHTML = this_row.cells.item(2).innerHTML;
+         cell4.innerHTML = this_row.cells.item(3).innerHTML;
+        $(btndel).closest("tr").remove();
+    } else {
+        return false;
+    }
+}
+
+    </script>
 {% endblock %}
 
 
@@ -29,49 +54,54 @@
         {% for semester in data.semesters %}
             {% if loop.first %}
                 <div role="tabpanel" class="tab-pane fade in active" id="tab_nr{{ semester.semester  }}">
-                    <table class="table table-condensed">
-                        {% for course in data.courses[semester.semester] %}
-                            {% if loop.first %}
-                            <tr>
+                    <table class="table table-condensed" id="table{{ semester.semester }}">
+                    <tr>
                                 <th>Course code</th>
                                 <th>Course name</th>
                                 <th>Language</th>
                                 <th>Credits</th>
                             </tr>
+                        {% for course in data.courses[semester.semester] %}
+{#                            {% if loop.first %}#}
+
                             <tr>
                                 <td>{{ course.code }}</td>
                                 <td>{{ course.course_name }}</td>
                                 <td>{{ course.course_language }}</td>
                                 <td>{{ course.credits }}</td>
                             </tr>
-                            {% else %}
-                            <tr>
-                                <td>{{ course.code }}</td>
-                                <td>{{ course.course_name }}</td>
-                                <td>{{ course.course_language }}</td>
-                                <td>{{ course.credits }}</td>
-                            </tr>
-                            {% endif %}
+{#                            {% else %}#}
+{#                            <tr>#}
+{#                                <td>{{ course.code }}</td>#}
+{#                                <td>{{ course.course_name }}</td>#}
+{#                                <td>{{ course.course_language }}</td>#}
+{#                                <td>{{ course.credits }}</td>#}
+{#                            </tr>#}
+{#                            {% endif %}#}
                         {% endfor %}
                     </table>
                 {% for package_id, package in data.packages.items() %}
-            {% for course in package %}
-                {% if course.semester_nr == semester.semester %}
-                <table class="table table-condensed">
-                            <tr>
+                    <table class="table table-hover">
+                    {% for course in package %}
+                        {% if loop.first %}
+                            <th colspan="4">{{ course.package_name }}</th>
+                        {% endif %}
+                        {% if course.semester_nr == semester.semester %}
+                            <tr id="row{{ loop.index }}">
                                 <td>{{ course.code }}</td>
                                 <td>{{ course.course_name }}</td>
                                 <td>{{ course.course_language }}</td>
                                 <td>{{ course.credits }}</td>
+                                <td><input type="button" value="Add" onclick="SomeDeleteRowFunction(this);"></td>
                             </tr>
-                </table>
-                {% endif %}
-            {% endfor %}
-        {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                    </table>
+                {% endfor %}
                 </div>
             {% else %}
                 <div role="tabpanel" class="tab-pane fade" id="tab_nr{{ semester.semester  }}">
-                    <table class="table table-condensed">
+                    <table class="table table-condensed" id="table{{ semester.semester }}">
                         {% for course in data.courses[semester.semester] %}
                             {% if loop.first %}
                             <tr>
@@ -96,24 +126,29 @@
                             {% endif %}
                         {% endfor %}
                     </table>
+                <div width="100px">
                 {% for package_id, package in data.packages.items() %}
-            {% for course in package %}
+                {% for course in package %}
                 {% if course.semester_nr == semester.semester %}
-                <table class="table table-condensed">
-                            <tr>
+                <table class="table table-hover" width="100px" id="table_opt">
+                            <tr width="100px" id="row{{ loop.index }}">
                                 <td>{{ course.code }}</td>
                                 <td>{{ course.course_name }}</td>
                                 <td>{{ course.course_language }}</td>
                                 <td>{{ course.credits }}</td>
+                                <td><input type="button" value="Add" onclick="SomeDeleteRowFunction(this);"></td>
                             </tr>
                 </table>
                 {% endif %}
-            {% endfor %}
-        {% endfor %}
+                {% endfor %}
+                {% endfor %}
+                </div>
                 </div>
             {% endif %}
         {% endfor %}
-
+        <button class="btn btn-succes btn-lg">
+                        <a href="{{ url_for('student.home', data=data) }}"> Complete</a>
+                            </button>
         </div>
     </div>
 {% endblock %}

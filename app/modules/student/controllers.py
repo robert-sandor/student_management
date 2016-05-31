@@ -146,7 +146,6 @@ def add_contract():
                                             "evaluation_type": course.evaluation_type,
                                             "course_language": course.course_language,
                                             "is_optional": course.is_optional})
-    print(packages)
     data = {"username": current_user.username,
             "role": current_user.role,
             "first_name": current_student.first_name,
