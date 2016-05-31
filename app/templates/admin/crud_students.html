@@ -8,51 +8,51 @@
     {{ super() }}
 
     <style>
-    .table-sortable tbody tr {
-        cursor: move;
-    }
+        .table-sortable tbody tr {
+            cursor: move;
+        }
     </style>
 
     <script>
-     function save_changes(course_id) {
+        function save_changes() {
             var students = [];
             var group_dates = [];
-            var substr = /^student_/;
-            $("h4.panel-title table tr > th").each(function () {
-                var s_group = $(this).find("label.group").text();
-                var dates = [];
-                if (s_group != "") {
-                    $("h4.panel-title table tr > th." + s_group + " input").each(function (index, value) {
-                        dates.push({grade: [index, $(value).datepicker({dateFormat: 'dd/mm/yyyy'}).val()]});
-                    });
-                    group_dates.push({group: s_group, dates: dates})
-                }
-            });
-            $("div.panel-body table tbody > tr.student").each(function () {
-                students.push({
-                            course_id: course_id,
-                            student_id: $(this).attr('id').replace(substr, ''),
-                            grade_1: {
-                                "value": $(this).find("label input.grade_1").val(),
-                                "id": $(this).find("label input.grade_1").attr('id')
-                            },
-                            grade_2: {
-                                "value": $(this).find("label input.grade_2").val(),
-                                "id": $(this).find("label input.grade_2").attr('id')
-                            },
-                            grade_3: {
-                                "value": $(this).find("label input.grade_3").val(),
-                                "id": $(this).find("label input.grade_3").attr('id')
-                            }
+            $("div.row table tbody > tr").each(function (index, elem) {
+                console.log(index, elem);
+                var hidden = $(elem).attr("class");
+                if (!hidden) {
+                    var first_name = "";
+                    var last_name = "";
+                    var email = "";
+                    var group = "";
+                    $(elem).find("td").each(function (index1, elem1) {
+                        console.log(index1, elem1);
+                        var tagg = $(elem1).attr("data-name");
+                        if (tagg == "name1") {
+                            first_name = $(elem1).find("input").val()
+                        } else if (tagg == "name2") {
+                            last_name = $(elem1).find("input").val()
+                        } else if (tagg == "email") {
+                            email = $(elem1).find("input").val()
+                        } else if (tagg == "sel") {
+                            group = [$(elem1).find(":selected").val(), $(elem1).find(":selected").text()];
                         }
-                );
+                    });
+                    console.log(first_name, last_name, email, group);
+                    students.push({
+                            first_name: first_name,
+                            last_name: last_name,
+                            email: email,
+                            group: group
+                    })
+                }
 
             });
-            var json = JSON.stringify({students: students, group_dates: group_dates}, null, '\t');
+            var json = JSON.stringify(students, null, '\t');
             console.log(json);
             $.ajax({
                 type: "POST",
-                url: "{{ url_for('professor.save') }}",
+                url: "{{ url_for('admin_staff.save_students') }}",
                 data: json,
                 contentType: 'application/json;charset=UTF-8',
                 success: function (response) {
@@ -64,136 +64,134 @@
             });
         }
 
-    $(document).ready(function() {
-    $("#add_row").on("click", function() {
-        // Dynamic Rows Code
+        $(document).ready(function () {
+            $("#add_row").on("click", function () {
+                // Dynamic Rows Code
 
-        // Get max row id and set new id
-        var newid = 0;
-        $.each($("#tab_logic tr"), function() {
-            if (parseInt($(this).data("id")) > newid) {
-                newid = parseInt($(this).data("id"));
-            }
-        });
-        newid++;
+                // Get max row id and set new id
+                var newid = 0;
+                $.each($("#tab_logic tr"), function () {
+                    if (parseInt($(this).data("id")) > newid) {
+                        newid = parseInt($(this).data("id"));
+                    }
+                });
+                newid++;
 
-        var tr = $("<tr></tr>", {
-            id: "addr"+newid,
-            "data-id": newid
-        });
-
-        // loop through each td and create new elements with name of newid
-        $.each($("#tab_logic tbody tr:nth(0) td"), function() {
-            var cur_td = $(this);
-
-            var children = cur_td.children();
-
-            // add new td and element if it has a nane
-            if ($(this).data("name") != undefined) {
-                var td = $("<td></td>", {
-                    "data-name": $(cur_td).data("name")
+                var tr = $("<tr></tr>", {
+                    id: "addr" + newid,
+                    "data-id": newid
                 });
 
-                var c = $(cur_td).find($(children[0]).prop('tagName')).clone().val("");
-                c.attr("name", $(cur_td).data("name") + newid);
-                c.appendTo($(td));
-                td.appendTo($(tr));
-            } else {
-                var td = $("<td></td>", {
-                    'text': $('#tab_logic tr').length
-                }).appendTo($(tr));
-            }
+                // loop through each td and create new elements with name of newid
+                $.each($("#tab_logic tbody tr:nth(0) td"), function () {
+                    var cur_td = $(this);
+
+                    var children = cur_td.children();
+
+                    // add new td and element if it has a nane
+                    if ($(this).data("name") != undefined) {
+                        var td = $("<td></td>", {
+                            "data-name": $(cur_td).data("name")
+                        });
+
+                        var c = $(cur_td).find($(children[0]).prop('tagName')).clone().val("");
+                        c.attr("name", $(cur_td).data("name") + newid);
+                        c.appendTo($(td));
+                        td.appendTo($(tr));
+                    } else {
+                        var td = $("<td></td>", {
+                            'text': $('#tab_logic tr').length
+                        }).appendTo($(tr));
+                    }
+                });
+
+                // add the new row
+                $(tr).appendTo($('#tab_logic'));
+
+                $(tr).find("td button.row-remove").on("click", function () {
+                    $(this).closest("tr").remove();
+                });
+            });
+
+
+            // Sortable Code
+            var fixHelperModified = function (e, tr) {
+                var $originals = tr.children();
+                var $helper = tr.clone();
+
+                $helper.children().each(function (index) {
+                    $(this).width($originals.eq(index).width())
+                });
+
+                return $helper;
+            };
+
+            $(".table-sortable tbody").sortable({
+                helper: fixHelperModified
+            }).disableSelection();
+
+            $(".table-sortable thead").disableSelection();
+
+
+            $("#add_row").trigger("click");
         });
-
-        // add the new row
-        $(tr).appendTo($('#tab_logic'));
-
-        $(tr).find("td button.row-remove").on("click", function() {
-             $(this).closest("tr").remove();
-        });
-});
-
-
-
-
-    // Sortable Code
-    var fixHelperModified = function(e, tr) {
-        var $originals = tr.children();
-        var $helper = tr.clone();
-
-        $helper.children().each(function(index) {
-            $(this).width($originals.eq(index).width())
-        });
-
-        return $helper;
-    };
-
-    $(".table-sortable tbody").sortable({
-        helper: fixHelperModified
-    }).disableSelection();
-
-    $(".table-sortable thead").disableSelection();
-
-
-
-    $("#add_row").trigger("click");
-});
     </script>
 {% endblock %}
 
 {% block content %}
-<div class="container">
+    <div class="container">
         <h2>CRUD Students</h2>
         <a class="btn btn-default" role="button" onclick="save_changes()">Save</a>
-    <div class="row clearfix">
-    	<div class="col-md-12 table-responsive">
-			<table class="table table-bordered table-hover table-sortable" id="tab_logic">
-				<thead>
-					<tr >
-						<th class="text-center">
-							First Name
-						</th>
-						<th class="text-center">
-							Last Name
-						</th>
-						<th class="text-center">
-							Email
-						</th>
-    					<th class="text-center">
-							Group
-						</th>
-        				<th class="text-center" style="border-top: 1px solid #ffffff; border-right: 1px solid #ffffff;">
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-    				<tr id='addr0' data-id="0" class="hidden">
-						<td data-name="name">
-						    <input type="text" name='name0'  placeholder='First Name' class="form-control"/>
-						</td>
-						<td data-name="mail">
-						    <input type="text" name='mail0' placeholder='Last Name' class="form-control"/>
-						</td>
-						<td data-name="desc">
-						    <input type="email" name="email0" placeholder="Description" class="form-control"/>
-						</td>
-    					<td data-name="sel">
-						    <select name="sel0">
-                                {% for group in data.groups %}
-        				        <option value="{{ group.id }}">{{ group.value }}</option>
-    					        {% endfor %}
-						    </select>
-						</td>
-                        <td data-name="del">
-                            <button name="del0" class='btn btn-danger glyphicon glyphicon-remove row-remove'>Delete</button>
+        <div class="row clearfix">
+            <div class="col-md-12 table-responsive">
+                <table class="table table-bordered table-hover table-sortable" id="tab_logic">
+                    <thead>
+                    <tr>
+                        <th class="text-center">
+                            First Name
+                        </th>
+                        <th class="text-center">
+                            Last Name
+                        </th>
+                        <th class="text-center">
+                            Email
+                        </th>
+                        <th class="text-center">
+                            Group
+                        </th>
+                        <th class="text-center" style="border-top: 1px solid #ffffff; border-right: 1px solid #ffffff;">
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr id='addr0' data-id="0" class="hidden">
+                        <td data-name="name1">
+                            <input type="text" name='name0' placeholder='First Name' class="form-control"/>
                         </td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-	</div>
-	<a id="add_row" class="btn btn-default pull-right">Add Row</a>
-</div>
+                        <td data-name="name2">
+                            <input type="text" name='mail0' placeholder='Last Name' class="form-control"/>
+                        </td>
+                        <td data-name="email">
+                            <input type="email" name="email0" placeholder="Description" class="form-control"/>
+                        </td>
+                        <td data-name="sel">
+                            <select name="sel0">
+                                {% for group in data.groups %}
+                                    <option value="{{ group.id }}">{{ group.value }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td data-name="del">
+                            <button name="del0" class='btn btn-danger glyphicon glyphicon-remove row-remove'>Delete
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <a id="add_row" class="btn btn-default pull-right">Add Row</a>
+    </div>
 
 
 {% endblock %}

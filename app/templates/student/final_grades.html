@@ -38,8 +38,10 @@
                     <p class="text-danger">Failed</p>
                 </td>
             {% endif %}
-            <td>{{ course.final_grade["date"] }}</td>
-            <td>{{ course.final_grade["grade"] }}</td>
+            <td>{% if course.final_grade["date"] is not none %}  {{ course.final_grade["date"] }}
+                    {% else %}      {% endif %}</td>
+            <td>{% if course.final_grade["grade"] is number %}  {{ course.final_grade["grade"] }}
+                    {% else %} 0 {% endif %}</td>
         </tr>
     {% endfor %}
     </tbody>

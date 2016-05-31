@@ -34,19 +34,41 @@
             {% if course.grades[1].grade %}
                 <td>{{ course.grades[1].date }}</td>
                 <td>{{ course.grades[1].grade }}</td>
-                <td><label class="text-info">{{ "Passed" if course.grades[1].grade >= 5 else "Failed" }}</label> </td>
+                <td><label class="text-info">
+                    {% if course.grades[1].grade is number %}
+                        {{ "Passed" if course.grades[1].grade >= 5 else "Failed" }}
+                    {% else %}
+                        Failed
+                    {% endif %}
+                </label> </td>
                 {% elif course.grades[2] %}
-                    <td>{{ course.grades[2].date }}</td>
-                    <td>{{ course.grades[2].grade }}</td>
-                    <td><label class="text-info">{{ "Passed" if course.grades[2].grade >= 5 else "Failed" }}</label> </td>
+                    <td>{% if course.grades[0].date is not none %} {{ course.grades[2].date }}
+                            {% else %}      {% endif %}</td>
+                    <td>{% if course.grades[0].grade is number %} {{ course.grades[2].grade }}
+                            {% else %} 0 {% endif %}</td>
+                    <td><label class="text-info">
+                        {% if course.grades[2].grade is number %}
+                            {{ "Passed" if course.grades[2].grade >= 5 else "Failed" }}
+                        {% else %}
+                            Failed
+                        {% endif %}
+                    </label> </td>
                 {% else %}
                     <td>Absent</td>
                     <td>Failed</td>
                     <td><label class="text-info"> Failed </label></td>
             {% endif %}
-            <td>{{ course.grades[0].date }}</td>
-            <td>{{ course.grades[0].grade }}</td>
-            <td><label class="text-info">{{ "Passed" if course.grades[0].grade >= 5 else "Failed" }}</label> </td>
+            <td>{% if course.grades[0].date is not none %} {{ course.grades[0].date }}
+                        {% else %}      {% endif %}</td>
+            <td>{% if course.grades[0].grade is number %} {{ course.grades[0].grade }}
+                    {% else %} 0 {% endif %}</td>
+            <td><label class="text-info">
+                {% if course.grades[0].grade is number %}
+                    {{ "Passed" if course.grades[0].grade >= 5 else "Failed" }}
+                {% else %}
+                    Failed
+                {% endif %}
+            </label> </td>
         </tr>
     {% endfor %}
     </tbody>

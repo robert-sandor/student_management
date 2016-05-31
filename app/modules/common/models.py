@@ -73,6 +73,13 @@ class Student(db.Model):
     user = relationship('User')
     contract = relationship('Contract')
 
+    def __init__(self, semigroup_id, serial_number, user_id, first_name, last_name):
+        self.semigroup_id = semigroup_id
+        self.serial_number = serial_number
+        self.user_id = user_id
+        self.first_name = first_name
+        self.last_name = last_name
+
 
 class StudyGroup(db.Model):
     __tablename__ = 'study_group'
