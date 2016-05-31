@@ -91,6 +91,16 @@ def list_students():
     return render_template(template, data=data)
 
 
+@admin_staff.route('/crud_students/', methods=['GET', 'POST'])
+@login_required(4)
+def crud_students():
+    data = {"username": current_user.username,
+            "email": current_user.email,
+            "role": current_user.role,
+            "status": current_user.status}
+    return render_template("admin/crud_students.html", data=data)
+
+
 def __save_date(section, from_date, to_date):
     if section is not "" or section is None:
         AdminDates.query.filter_by(type=int(section)).update(dict(from_date=from_date, to=to_date))
