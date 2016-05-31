@@ -10,11 +10,12 @@
 
 
 {% block content %}
-    <div class="container">
   <h2>{{ data.first_name }} {{ data.last_name }}'s grades</h2>
   <table class="table">
     <thead>
       <tr>
+        <th>Semester</th>
+        <th>Code</th>
         <th>Course</th>
         <th>Passed</th>
         <th>Evaluation date</th>
@@ -24,24 +25,25 @@
     <tbody>
     {% for course in data.courses %}
         <tr>
+            <td>{{ course.semester }}</td>
+            <td>{{ course.code }}</td>
             <td>{{ course.course }}</td>
-            {% if course.final_grade["grade"]|string() >= "5"%}
+            {% if course.passed %}
                 <td>
                     <p class="text-success">Passed</p>
                 </td>
             {% endif %}
-            {% if course.final_grade["grade"]|string() < "5"%}
+            {% if not(course.passed) %}
                 <td>
                     <p class="text-danger">Failed</p>
                 </td>
             {% endif %}
-            <td>{{ course.final_grade["date"] if course.final_grade != 0 else "-" }}</td>
-            <td>{{ course.final_grade["grade"] if course.final_grade else "Failed"}}</td>
+            <td>{{ course.final_grade["date"] }}</td>
+            <td>{{ course.final_grade["grade"] }}</td>
         </tr>
     {% endfor %}
     </tbody>
   </table>
-</div>
 {% endblock %}
 
 {% block username %}{{ super() }}{% endblock %}

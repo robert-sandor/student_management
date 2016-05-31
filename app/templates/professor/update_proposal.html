@@ -8,9 +8,6 @@
 
 {% block head %}
     {{ super() }}
-    <script type="text/javascript">
-
-    </script>
 {% endblock %}
 
 {% block content %}
@@ -22,13 +19,14 @@
         {% else %}
         {% endif %}
         {% set css_class = 'form-control' + kwargs.pop('class', '') %}
-        {{ field(class=css_class, placeholder=placeholder, required=True, **kwargs) }}
+        {% set text = text %}
+        {{ field(class=css_class, placeholder=placeholder, required=True,text=text, **kwargs) }}
     {% endmacro %}
 
     <p class="text-right">
         You have submitted {{ data.no_proposals }} proposals currently. You have {{ data.max_proposals - data.no_proposals }} available.
     </p>
-    <h3>  New proposal</h3>
+    <h3>  Update proposal</h3>
     <hr>
     <div class="container-fluid">
     <form class="form-horizontal" method="POST" action="." accept-charset="UTF-8" role="form">
@@ -52,24 +50,39 @@
             </div>
         {% endif %}
         {{ form.csrf_token }}
-            <div class="form-group">{{ form.course_name.label }} {{ render_field(form.course_name,
-                                                                    placeholder="Course name", autofocus="") }}</div>
-            <div class="form-group">{{ form.speciality.label }} {{ render_field(form.speciality,
-                                                                    placeholder="Speciality") }}</div>
-            <div class="form-group">{{ form.study_line.label }} {{ render_field(form.study_line,
-                                                                    placeholder="Study line") }}</div>
-            <div class="form-group">{{ form.description.label }} {{ render_field(form.description,
-                                                                    placeholder="Description", rows="10") }}</div>
+            <div class="form-group"><label for="course_name">Course name</label>
+
+
+
+
+        <input autofocus="" class="form-control" id="coursenameinput" name="course_name" placeholder="Course name" required text="" type="text" value="{{ data.proposal.course_name }}">
+    </div>
+            <div class="form-group"><label for="speciality">Speciality</label>
+
+
+
+
+        <input class="form-control" id="specialityinput" name="speciality" placeholder="Speciality" required text="" type="text" value="{{ data.proposal.speciality }}">
+    </div>
+            <div class="form-group"><label for="study_line">Study line</label>
+
+
+
+
+        <input class="form-control" id="studylineinput" name="study_line" placeholder="Study line" required text="" type="text" value="{{ data.proposal.study_line }}">
+    </div>
+            <div class="form-group"><label for="description">Description</label>
+
+
+
+
+        <textarea class="form-control" id="descriptioninput" name="description" placeholder="Description" required rows="10" text="">{{ data.proposal.description }}</textarea>
+    </div>
 
     <br>
     <p class="text-right">
-        {% if data.no_proposals < data.max_proposals %}
-            <button class="btn btn-default" type="submit" name="submit">Complete</button>
+            <button class="btn btn-default" type="submit" name="submit">Update</button>
             <button class="btn btn-default">View</button>
-        {% else %}
-            <button class="btn btn-default" type="submit" name="submit" disabled="disabled">Complete</button>
-            <button class="btn btn-default">View</button>
-        {% endif %}
     </p>
     </form>
     </div>
@@ -92,12 +105,7 @@
             </li>
     	</ul>
     </li>
-   <li>
-        <a href="#collapse1" data-toggle="collapse"> Grading</a>
-	    <ul id="collapse1" class="panel-collapse collapse">
-            {% for course in data.courses %}
-                <li><a href="/prof/grading/{{course.id}}">{{ course.course_name }}</a></li>
-            {% endfor %}
-	    </ul>
+    <li>
+        <a href="#">Grading</a>
     </li>
 {% endblock %}

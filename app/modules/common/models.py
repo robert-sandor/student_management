@@ -53,10 +53,10 @@ class Semigroup(db.Model):
     __tablename__ = 'semigroup'
 
     id = Column(Integer, primary_key=True, unique=True)
-    semigroup_id = Column(ForeignKey('study_group.id'), nullable=False)
+    study_group_id = Column(ForeignKey('study_group.id'), nullable=False)
     semigroup_number = Column(String(5))
 
-    semigroup = relationship('StudyGroup')
+    study_group = relationship('StudyGroup')
 
 
 class Student(db.Model):
@@ -82,6 +82,7 @@ class StudyGroup(db.Model):
     group_number = Column(String(10))
 
     semester = relationship('Semester')
+    semigroup = relationship('Semigroup')
 
 
 class Vote(db.Model):
@@ -121,6 +122,7 @@ class Course(db.Model):
     credits = Column(Integer)
     evaluation_type = Column(String(10), nullable=False)
     is_optional = Column(Boolean, nullable=False, server_default=text("true"))
+    course_language = Column(String(10))
 
     semester = relationship('Semester')
 
@@ -158,7 +160,6 @@ class OptionalCourse(db.Model):
     active = Column(Boolean, nullable=False, server_default=text("false"))
     id_department = Column(ForeignKey('department.id'), nullable=False)
     package_id = Column(ForeignKey('package.id'), nullable=True)
-    course_language = Column(String(10))
 
     course = relationship('Course')
     department = relationship('Department')
@@ -179,6 +180,7 @@ class Semester(db.Model):
     semester = Column(Integer, nullable=False)
 
     year = relationship('Year')
+    study_group = relationship('StudyGroup')
 
 
 class Specialty(db.Model):
@@ -232,6 +234,7 @@ class Year(db.Model):
     current_capacity = Column(Integer, nullable=False, server_default=text("0"))
 
     study_plan = relationship('StudyPlan')
+    semester = relationship('Semester')
 
     def __repr__(self):
         return str(self.study_year)
@@ -244,6 +247,7 @@ class Professor(db.Model):
     rank = Column(String(50), nullable=False)
     id_department = Column(ForeignKey('department.id'), nullable=False)
     id_user = Column(ForeignKey('auth_user.id'), nullable=False)
+    name = Column(String(20))
 
     department = relationship('Department', primaryjoin='Professor.id_department == Department.id')
     auth_user = relationship('User')
@@ -292,8 +296,6 @@ class ProposedCourses(db.Model):
         self.speciality = speciality
         self.study_line = study_line
         self.description = description
-
-
 
 
 class AdminDates(db.Model):
