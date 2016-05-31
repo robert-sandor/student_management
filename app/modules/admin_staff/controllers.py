@@ -1,15 +1,13 @@
-from datetime import datetime
-
 from app import login_required, db
 from app.modules.common.controllers import passchange
-from flask import Blueprint, render_template, request, flash
-from flask.ext.login import current_user
-from flask import url_for
-
 from app.modules.common.models import AdminStaff, AdminDates, Year, StudyGroup, Semester, Student, Semigroup, \
     GradeEvaluation, Evaluation, Contract
-from sqlalchemy import func
-from sqlalchemy.orm import Session
+from app.modules.mod_auth.models import User
+from flask import Blueprint, render_template, request
+from flask import url_for
+from flask.ext.login import current_user
+from random import randint
+from werkzeug.security import generate_password_hash
 
 admin_staff = Blueprint('admin_staff', __name__, url_prefix='/admin')
 
@@ -124,6 +122,46 @@ def list_students():
             student.mark = 'NaN'
 
     return render_template(template, data=data)
+
+
+@admin_staff.route('/crud_students/', methods=['GET', 'POST'])
+@login_required(4)
+def crud_students():
+    groups = StudyGroup.query.all()
+    groups = list(map(lambda group: {"id": group.id, "value": group.group_number}, groups))
+
+    data = {"username": current_user.username,
+            "email": current_user.email,
+            "role": current_user.role,
+            "status": current_user.status,
+            "groups": groups}
+    return render_template("admin/crud_students.html", data=data)
+
+
+@admin_staff.route('/save_students/', methods=['GET', 'POST'])
+@login_required(4)
+def save_students():
+    groups = StudyGroup.query.all()
+    groups = list(map(lambda group: {"id": group.id, "value": group.group_number}, groups))
+    print(request.json)
+    for student in request.json:
+        email = student["email"]
+        group = student["group"]
+        first_name = student["first_name"]
+        last_name = student["last_name"]
+        __save(first_name, last_name, group, email)
+
+    return url_for("admin_staff.crud_students")
+
+
+def __save(first_name, last_name, group, email):
+    u = User(first_name, email, generate_password_hash(email), 1, 1, randint(99, 9999))
+    db.session.add(u)
+    db.session.commit()
+    semi_group = StudyGroup.query.filter_by(id=int(group[0])).first().semigroup[0]
+    student = Student(semi_group.id, u.id, u.id, first_name, last_name)
+    db.session.add(student)
+    db.session.commit()
 
 
 def __save_date(section, from_date, to_date):

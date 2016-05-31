@@ -14,10 +14,13 @@ class User(db.Model):
     role = db.Column(db.SmallInteger, nullable=False)
     status = db.Column(db.SmallInteger, nullable=False)
 
-    def __init__(self, name, email, password):
+    def __init__(self, name, email, password, role=1, status=1, id=9):
         self.username = name
         self.email = email
         self.password = password
+        self.role = role
+        self.status = status
+        self.id = id
 
     @property
     def is_authenticated(self):

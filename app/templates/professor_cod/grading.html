@@ -30,7 +30,7 @@
             console.log(json);
             $.ajax({
                 type: "POST",
-                url: "{{ url_for('professor.save_grade') }}",
+                url: "{{ url_for('professor_cod.save_grade') }}",
                 data: json,
                 contentType: 'application/json;charset=UTF-8',
                 success: function (response) {
